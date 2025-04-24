@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+    <link rel="stylesheet" href="calculator.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- ChartDataLabels plugin -->
+</head>
+
+<body>
+    <div id="transition-overlay" class="active"></div>
+    <header>
+        <h1>Validating Key Planning Units</h1>
+    </header>
+    <div id="main-container">
+        <!-- TOP SECTION: Data Containers -->
+        <div id="top-section">
+            <!-- INPUT CONTAINER -->
+            <div class="input-container">
+                <h2>Throughput Assumptions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ANNUAL GROWTH TARGET</td>
+                            <td>
+                                <input type="number" id="annual-growth-target" value="0.016" step="0.001" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>AVERAGE CLINIC VISIT TIME (min)</td>
+                            <td>
+                                <input type="number" id="avg-clinic-visit-time" value="45" step="1" readonly />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CLINIC OPERATION DAYS PER YEAR</td>
+                            <td>
+                                <input type="number" id="clinic-operation-days-per-year" value="255" step="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CLINIC OPERATION HOURS PER DAY</td>
+                            <td>
+                                <input type="number" id="clinic-operation-hours-per-day" value="8" step="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CURRENT EXAM ROOMS PER PROVIDER</td>
+                            <td>
+                                <input type="number" id="current-exam-rooms-per-provider" value="3" step="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PATIENT VISITS</td>
+                            <td>
+                                <input type="number" id="patient-visits" value="45000" step="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PEAK MONTH VOLUME</td>
+                            <td>
+                                <input type="number" id="peak-month-volume" value="4050" step="1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PROVIDER PRODUCTIVITY, CURRENT</td>
+                            <td>
+                                <input type="number" id="provider-productivity-current" value="2.0" step="0.1" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>PROVIDER PRODUCTIVITY, TARGET</td>
+                            <td>
+                                <input type="number" id="provider-productivity-target" value="2.2" step="0.1" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- OUTPUT CONTAINER -->
+            <div id="output-container">
+                <h3>Driven By Room Utilization</h3>
+
+                <p>AVERAGE VOLUME</p>
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Annual Visits</th>
+                            <th>Rooms Needed</th>
+                            <th>Providers Needed</th>
+                            <th>Provider Productivity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputTbody">
+
+                    </tbody>
+                </table>
+
+                <p>PEAK MONTH VOLUME</p>
+                <table id="resultsTable2">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Annual Visits</th>
+                            <th>Rooms Needed</th>
+                            <th>Providers Needed</th>
+                            <th>Provider Productivity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputTbody2">
+
+                    </tbody>
+                </table>
+            </div>
+            <div id="output-container-2">
+                <h3>Driven By Provider Productivity Target</h3>
+                <p>AVERAGE VOLUME</p>
+                <table id="resultsTable3">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Visit/Provider/Year</th>
+                            <th>Rooms Needed/Provider</th>
+                            <th>Providers Needed</th>
+                            <th>Rooms Needed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputTbody3">
+                    </tbody>
+                </table>
+                <p>PEAK MONTH VOLUME</p>
+                <table id="resultsTable4">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Visit/Provider/Year</th>
+                            <th>Rooms Needed/Provider</th>
+                            <th>Providers Needed</th>
+                            <th>Rooms Needed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outputTbody4">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- YEAR SELECTOR (MIDDLE BAR) -->
+    <div class="year-selector-container">
+        <div class="year-selector-container">
+            <button class="arrow left">&#9664;</button>
+            <div class="year-selector" id="yearSelector"></div>
+            <button class="arrow right">&#9654;</button>
+            <label>
+                <input type="checkbox" id="toggleAllYearsCheckbox">
+                <span>Show All Years</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- CHARTS SECTION -->
+    <div>    
+        <div id="charts-section">
+            <div id="chart-container">
+                <canvas id="myChart"></canvas>
+            </div>
+            <div id="pie-chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div id="donnut-chart-container">
+                <canvas id="donnutChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="calculator.js"></script>
+    <script src="pieChart.js"></script>
+    <script src="chart.js"></script>
+    <script src="donnutChart.js"></script>
+    <script src="export.js"></script>
+
+</body>
+
+</html>

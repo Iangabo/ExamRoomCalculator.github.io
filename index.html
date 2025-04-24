@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Room Calculator</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" id="main-style-css" href="styles.css" type="text/css" media="all">
+  <link rel="stylesheet" id="main-style-css" href="css/bundle.css" type="text/css" media="all">
+  <link rel="stylesheet" id="cms-navigation-style-base-css" href="css/cms-navigation-base.css" type="text/css"
+    media="screen">
+  <link rel="stylesheet" id="cms-navigation-style-css" href="css/cms-navigation.css" type="text/css" media="screen">
+</head>
+
+<body>
+  <div class="video-container">
+    <video autoplay muted loop playsinline id="background-video">
+      <source src="backvideo.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+
+  <div class="title-overlay">
+    <div class="scrolling-title-wrapper">
+      <div class="scrolling-title">Exam Room Calculator</div>
+      <div class="scrolling-title">Exam Room Calculator</div> 
+    </div>
+  </div>
+
+  <!-- ------- -->
+  <!-- Navbar  -->
+  <!-- ------- -->
+  <header class="header-fixed active">
+    <!-- background overlay for header (effects like translucency) -->
+    <div class="header-fixed__bg">
+      <span class="js-header-background"></span>
+    </div>
+
+    <!-- Left Section: Logo and Navigation Links / Hamburger -->
+    <div class="header-fixed__left">
+      <!-- Hamburger for mobile view -->
+      <div class="hamburger" data-target="examRoomNeedCalculator/calculator.html">
+        <div class="hamburger__wrapper">
+          <div class="hamburger__container">
+            <div class="hamburger__bg"></div>
+            <div class="hamburger__flex">
+              <div class="hamburger__icon">
+                <span class="top"></span>
+                <span class="center positive"></span>
+                <span class="center negative"></span>
+                <span class="bottom"></span>
+              </div>
+              <div class="hamburger__txt">
+                <span class="uppercase bold js-header-color">Go to Calculator</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div id="transition-overlay"></div> <!-- Transition Overlay -->
+
+  <!-- Scripts -->
+  <script src="index.js"></script>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/index.bundle.js"></script>
+  <script src="js/hoverIntent.min.js"></script>
+  <script src="js/maxmegamenu.js"></script>
+</body>
+
+</html>
