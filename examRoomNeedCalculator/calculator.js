@@ -472,10 +472,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const yearButtons = document.querySelectorAll(".year-button");
     
         if (this.checked) {
+            // Activar todos los botones
             yearButtons.forEach(btn => {
+                const year = parseInt(btn.dataset.year, 10);
                 btn.classList.add("active");
-                btn.disabled = true; 
+                btn.disabled = true;
+                
+                // Agregar filas para este año en todas las tablas
+                addOutputRow(year);
+                addOutputRowPeak(year);
+                addOutputRowProviderProductivity(year);
+                addOutputRowProviderProductivityPeak(year);
             });
+            
+            // Calcular datos para todos los años seleccionados
+            calculateDataForSelectedYears();
     
             if (typeof updateChart === "function") {
                 updateChart(getPrecalculatedData());
