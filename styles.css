@@ -8,6 +8,7 @@
   --accent-color: #fb9b35;
   --transition-color: #088eb0;
   --header-bg-color: rgba(139, 135, 135, 0.171);
+  --fixed-title-size: 10rem; 
 }
 
 * {
@@ -45,12 +46,13 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   object-fit: cover;
+  object-position: left center; 
 }
 
 /* Scrolling Title */
 .title-overlay {
   position: absolute;
-  bottom: 0vh;
+  bottom: 0; 
   width: 100%;
   overflow: hidden;
   z-index: 5;
@@ -66,7 +68,7 @@ body {
 .scrolling-title {
   display: inline-block;
   white-space: nowrap;
-  font-size: clamp(4rem, 15vw, 15rem);
+  font-size: var(--fixed-title-size); 
   color: var(--primary-color);
   letter-spacing: clamp(0.02em, 0.05em, 14px);
 }
@@ -249,33 +251,21 @@ header {
 
 /* Media Queries */
 @media (max-width: 1024px) {
-  .scrolling-title {
-    font-size: clamp(3rem, 12vw, 10rem);
-  }
+
 }
 
 @media (max-width: 768px) {
-  .title-overlay {
-    bottom: 8vh;
-  }
   
   .scrolling-title-wrapper {
     animation-duration: 12s;
   }
   
   .header-title {
-    font-size: clamp(1.5rem, 3vw, 3rem);
+    font-size: clamp(2rem, 4vw, 3rem);
   }
 }
 
 @media (max-width: 480px) {
-  .title-overlay {
-    bottom: 5vh;
-  }
-  
-  .scrolling-title {
-    font-size: clamp(2.5rem, 10vw, 8rem);
-  }
   
   .hamburger__txt {
     display: none;
@@ -283,8 +273,26 @@ header {
   
   #background-video {
     height: 100%;
-    width: 100%;
+    width: auto;
     object-fit: cover;
+    object-position: left center;
+  }
+  
+  .video-container {
+    background-position: left center;
+  }
+  
+  .main-content h2 {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+  }
+  
+  .main-content p {
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  }
+  
+  .main-content button {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    padding: 0.7rem 1.5rem;
   }
 }
 
@@ -297,6 +305,6 @@ header {
   .video-container {
     background-image: url('backvideo-poster.jpg');
     background-size: cover;
-    background-position: center;
+    background-position: left center;
   }
 }
