@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.addEventListener("click", function () {
             const activeButtons = document.querySelectorAll(".year-button.active");
 
-            if (!this.classList.contains("active") && activeButtons.length >= 4) {
+            if (!this.classList.contains("active") && activeButtons.length >= 11) {
                 return;
             }
 

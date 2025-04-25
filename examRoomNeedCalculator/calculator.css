@@ -58,8 +58,10 @@ body {
   min-width: 300px;
   max-width: 550px;
   min-height: 470px;
+  max-height: 470px;
   margin-bottom: 20px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Headings and Paragraphs for output containers */
@@ -77,6 +79,7 @@ body {
   background: white;
   padding: 0 50px;
   white-space: nowrap;
+  overflow: auto;
 }
 
 #output-container p,
@@ -124,6 +127,28 @@ input {
   text-align: right;
   background: none;
 }
+
+#output-container::-webkit-scrollbar,
+#output-container-2::-webkit-scrollbar {
+  width: 3px; 
+}
+
+#output-container::-webkit-scrollbar-track,
+#output-container-2::-webkit-scrollbar-track {
+  background: #f0f0f0; 
+}
+
+#output-container::-webkit-scrollbar-thumb,
+#output-container-2::-webkit-scrollbar-thumb {
+  background-color: #088eb0; 
+  border-radius: 4px;
+}
+
+#output-container::-webkit-scrollbar-thumb:hover,
+#output-container-2::-webkit-scrollbar-thumb:hover {
+  background-color: #066f8c; 
+}
+
 
 /* Heading Styles */
 h1 {
