@@ -1,10 +1,6 @@
-// zapier-integration.js
-// Script para integrar la calculadora con Zapier/Airtable
-
-class ZapierIntegration {
+class N8nIntegration {
     constructor() {
-        // REEMPLAZA ESTA URL CON TU WEBHOOK DE ZAPIER
-        this.ZAPIER_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/23231931/2v09pr4/';
+        this.N8N_WEBHOOK_URL = 'https://iancamero0611.app.n8n.cloud/webhook/41bac6d2-8d6d-4c1c-8e87-5dc568f37e62';
         this.isLoading = false;
         this.init();
     }
@@ -18,12 +14,12 @@ class ZapierIntegration {
     // Crear botón de sincronización
     createSyncButton() {
         const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'zapier-controls';
+        buttonContainer.className = 'n8n-controls';
         buttonContainer.innerHTML = `
             <div class="sync-container">
                 <button id="syncToAirtable" class="sync-btn">
                     <i class="fas fa-cloud-upload-alt"></i>
-                    Sync to Airtable
+                    Sync to Airtable via n8n
                 </button>
                 <div id="sync-status" class="sync-status"></div>
             </div>
@@ -48,7 +44,7 @@ class ZapierIntegration {
             statusDiv.innerHTML = `
                 <div class="status-ready">
                     <i class="fas fa-check-circle"></i>
-                    Ready to sync
+                    Ready to sync with n8n
                 </div>
             `;
         }
@@ -58,8 +54,8 @@ class ZapierIntegration {
     addStyles() {
         const styles = `
             <style>
-                .zapier-controls {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                .n8n-controls {
+                    background: linear-gradient(135deg, #FF6D5A 0%, #FF5722 100%);
                     padding: 15px;
                     margin: 10px 0;
                     border-radius: 10px;
@@ -75,7 +71,7 @@ class ZapierIntegration {
                 }
 
                 .sync-btn {
-                    background: linear-gradient(45deg, #4CAF50, #45a049);
+                    background: linear-gradient(45deg, #FF6D5A, #FF5722);
                     color: white;
                     border: none;
                     padding: 12px 24px;
@@ -87,13 +83,13 @@ class ZapierIntegration {
                     align-items: center;
                     gap: 8px;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+                    box-shadow: 0 4px 15px rgba(255, 109, 90, 0.3);
                 }
 
                 .sync-btn:hover:not(:disabled) {
-                    background: linear-gradient(45deg, #45a049, #4CAF50);
+                    background: linear-gradient(45deg, #FF5722, #FF6D5A);
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+                    box-shadow: 0 6px 20px rgba(255, 109, 90, 0.4);
                 }
 
                 .sync-btn:disabled {
@@ -113,31 +109,32 @@ class ZapierIntegration {
                     gap: 8px;
                     font-size: 14px;
                     font-weight: 500;
+                    color: white;
                 }
 
                 .status-ready {
-                    color: #4CAF50;
+                    color: #E8F5E8;
                     display: flex;
                     align-items: center;
                     gap: 5px;
                 }
 
                 .status-loading {
-                    color: #ff9800;
+                    color: #FFF3E0;
                     display: flex;
                     align-items: center;
                     gap: 5px;
                 }
 
                 .status-success {
-                    color: #4CAF50;
+                    color: #E8F5E8;
                     display: flex;
                     align-items: center;
                     gap: 5px;
                 }
 
                 .status-error {
-                    color: #f44336;
+                    color: #FFEBEE;
                     display: flex;
                     align-items: center;
                     gap: 5px;
@@ -147,7 +144,7 @@ class ZapierIntegration {
                     width: 16px;
                     height: 16px;
                     border: 2px solid #f3f3f3;
-                    border-top: 2px solid #ff9800;
+                    border-top: 2px solid #FF6D5A;
                     border-radius: 50%;
                     animation: spin 1s linear infinite;
                 }
@@ -158,21 +155,44 @@ class ZapierIntegration {
                 }
 
                 .webhook-config {
-                    background: #f5f5f5;
+                    background: rgba(255, 255, 255, 0.1);
                     padding: 10px;
                     border-radius: 5px;
                     margin-top: 10px;
                     font-size: 12px;
-                    color: #666;
+                    color: white;
+                    backdrop-filter: blur(10px);
                 }
 
                 .webhook-input {
                     width: 100%;
                     padding: 8px;
-                    border: 1px solid #ddd;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     border-radius: 4px;
                     font-size: 12px;
                     margin-top: 5px;
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    backdrop-filter: blur(5px);
+                }
+
+                .webhook-input::placeholder {
+                    color: rgba(255, 255, 255, 0.7);
+                }
+
+                .config-btn {
+                    margin-top: 5px;
+                    padding: 5px 10px;
+                    background: rgba(255, 255, 255, 0.2);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 3px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+
+                .config-btn:hover {
+                    background: rgba(255, 255, 255, 0.3);
                 }
 
                 @media (max-width: 768px) {
@@ -189,9 +209,9 @@ class ZapierIntegration {
             </style>
         `;
         
-        if (!document.getElementById('zapier-styles')) {
+        if (!document.getElementById('n8n-styles')) {
             const styleElement = document.createElement('div');
-            styleElement.id = 'zapier-styles';
+            styleElement.id = 'n8n-styles';
             styleElement.innerHTML = styles;
             document.head.appendChild(styleElement);
         }
@@ -205,7 +225,7 @@ class ZapierIntegration {
         }
 
         // Agregar configuración de webhook si no está configurado
-        if (this.ZAPIER_WEBHOOK_URL.includes('YOUR_WEBHOOK')) {
+        if (this.N8N_WEBHOOK_URL.includes('tu-instancia')) {
             this.showWebhookConfig();
         }
     }
@@ -217,10 +237,13 @@ class ZapierIntegration {
             const configDiv = document.createElement('div');
             configDiv.className = 'webhook-config';
             configDiv.innerHTML = `
-                <strong>⚠️ Configuración requerida:</strong><br>
-                Por favor, reemplaza la URL del webhook en el código:<br>
-                <input type="text" class="webhook-input" placeholder="Pega aquí tu URL de webhook de Zapier" id="webhook-input">
-                <button onclick="zapierIntegration.updateWebhookUrl()" style="margin-top: 5px; padding: 5px 10px; background: #2196F3; color: white; border: none; border-radius: 3px; cursor: pointer;">Actualizar</button>
+                <strong>⚙️ Configuración de n8n requerida:</strong><br>
+                Por favor, reemplaza la URL del webhook de n8n:<br>
+                <input type="text" class="webhook-input" placeholder="https://tu-instancia.app.n8n.cloud/webhook/hospital-data" id="webhook-input">
+                <button class="config-btn" onclick="n8nIntegration.updateWebhookUrl()">Actualizar Webhook</button>
+                <div style="margin-top: 8px; font-size: 11px; opacity: 0.8;">
+                    💡 Copia la URL de tu webhook desde n8n después de crear el workflow
+                </div>
             `;
             syncContainer.appendChild(configDiv);
         }
@@ -230,9 +253,9 @@ class ZapierIntegration {
     updateWebhookUrl() {
         const input = document.getElementById('webhook-input');
         if (input && input.value.trim()) {
-            this.ZAPIER_WEBHOOK_URL = input.value.trim();
+            this.N8N_WEBHOOK_URL = input.value.trim();
             document.querySelector('.webhook-config').remove();
-            this.updateStatus('ready', 'Webhook configurado - Listo para sincronizar');
+            this.updateStatus('ready', 'n8n Webhook configurado - Listo para sincronizar');
         }
     }
 
@@ -254,7 +277,9 @@ class ZapierIntegration {
                 data.push({
                     ...avgVolumeData,
                     calculation_type: 'Average Volume',
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    source: 'Hospital Calculator',
+                    sync_method: 'n8n_webhook'
                 });
             }
 
@@ -264,7 +289,9 @@ class ZapierIntegration {
                 data.push({
                     ...peakVolumeData,
                     calculation_type: 'Peak Month Volume',
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    source: 'Hospital Calculator',
+                    sync_method: 'n8n_webhook'
                 });
             }
         });
@@ -293,7 +320,6 @@ class ZapierIntegration {
         }
 
         return {
-            
             year: year,
             annual_visits: parseInt(visitsElement.textContent) || 0,
             rooms_needed: parseInt(roomsElement.textContent) || 0,
@@ -302,38 +328,62 @@ class ZapierIntegration {
         };
     }
 
-    // Enviar datos a Zapier
-    async sendDataToZapier(dataArray) {
-    if (this.ZAPIER_WEBHOOK_URL.includes('YOUR_WEBHOOK')) {
-        throw new Error('Por favor, configura tu URL de webhook de Zapier primero.');
-    }
-
-    const results = [];
-    
-    for (const data of dataArray) {
-        try {
-            const response = await fetch(this.ZAPIER_WEBHOOK_URL, {
-                method: 'POST',
-                // Remover el header Content-Type para evitar preflight
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.text();
-            results.push({ success: true, data: data, response: result });
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-        } catch (error) {
-            results.push({ success: false, data: data, error: error.message });
+    // Enviar datos a n8n
+    async sendDataToN8n(dataArray) {
+        if (this.N8N_WEBHOOK_URL.includes('tu-instancia')) {
+            throw new Error('Por favor, configura tu URL de webhook de n8n primero.');
         }
-    }
 
-    return results;
-}
+        const results = [];
+        
+        // Enviar datos de uno en uno para mejor control
+        for (const data of dataArray) {
+            try {
+                console.log('Enviando a n8n:', data);
+                
+                const response = await fetch(this.N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                // n8n puede devolver JSON o texto plano
+                let result;
+                try {
+                    result = await response.json();
+                } catch {
+                    result = await response.text();
+                }
+
+                results.push({ 
+                    success: true, 
+                    data: data, 
+                    response: result,
+                    status: response.status 
+                });
+                
+                // Pequeña pausa entre requests para evitar saturar n8n
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+            } catch (error) {
+                console.error('Error enviando a n8n:', error);
+                results.push({ 
+                    success: false, 
+                    data: data, 
+                    error: error.message 
+                });
+            }
+        }
+
+        return results;
+    }
 
     // Sincronizar todos los datos
     async syncAllData() {
@@ -345,8 +395,8 @@ class ZapierIntegration {
         try {
             // Actualizar UI
             syncButton.disabled = true;
-            syncButton.innerHTML = '<div class="spinner"></div> Syncing...';
-            this.updateStatus('loading', 'Preparando datos...');
+            syncButton.innerHTML = '<div class="spinner"></div> Syncing via n8n...';
+            this.updateStatus('loading', 'Preparando datos para n8n...');
 
             // Obtener datos
             const dataToSync = this.getAllCalculatedData();
@@ -355,36 +405,44 @@ class ZapierIntegration {
                 throw new Error('No hay datos para sincronizar.');
             }
 
-            this.updateStatus('loading', `Enviando ${dataToSync.length} registros...`);
+            this.updateStatus('loading', `Enviando ${dataToSync.length} registros a n8n...`);
 
-            // Enviar a Zapier
-            const results = await this.sendDataToZapier(dataToSync);
+            // Enviar a n8n
+            const results = await this.sendDataToN8n(dataToSync);
 
             // Analizar resultados
             const successful = results.filter(r => r.success).length;
             const failed = results.filter(r => !r.success).length;
 
             if (failed === 0) {
-                this.updateStatus('success', `✅ ${successful} registros sincronizados exitosamente`);
-                this.showNotification('Datos sincronizados exitosamente con Airtable!', 'success');
+                this.updateStatus('success', `✅ ${successful} registros procesados por n8n → Airtable`);
+                this.showNotification(`¡${successful} registros sincronizados exitosamente a través de n8n!`, 'success');
             } else {
+                const errorMessages = results
+                    .filter(r => !r.success)
+                    .map(r => r.error)
+                    .join(', ');
+                
                 this.updateStatus('error', `⚠️ ${successful} exitosos, ${failed} fallidos`);
-                this.showNotification(`Sincronización parcial: ${successful} exitosos, ${failed} fallidos`, 'warning');
+                this.showNotification(`Sincronización parcial: ${successful} exitosos, ${failed} fallidos. Errores: ${errorMessages}`, 'warning');
             }
 
+            // Log detallado para debugging
+            console.log('Resultados de sincronización n8n:', results);
+
         } catch (error) {
-            console.error('Error syncing data:', error);
+            console.error('Error syncing data via n8n:', error);
             this.updateStatus('error', `❌ Error: ${error.message}`);
-            this.showNotification(`Error: ${error.message}`, 'error');
+            this.showNotification(`Error en n8n: ${error.message}`, 'error');
         } finally {
             // Restaurar UI
             this.isLoading = false;
             syncButton.disabled = false;
-            syncButton.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Sync to Airtable';
+            syncButton.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Sync to Airtable via n8n';
             
             // Volver al estado ready después de 5 segundos
             setTimeout(() => {
-                this.updateStatus('ready', 'Ready to sync');
+                this.updateStatus('ready', 'Ready to sync with n8n');
             }, 5000);
         }
     }
@@ -422,79 +480,105 @@ class ZapierIntegration {
 
     // Mostrar notificación
     showNotification(message, type = 'info') {
-        // Crear elemento de notificación
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
-                ${message}
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : type === 'warning' ? 'exclamation-triangle' : 'info'}-circle"></i>
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
             </div>
         `;
 
-        // Agregar estilos de notificación
+        // Agregar estilos de notificación si no existen
         if (!document.getElementById('notification-styles')) {
-            const notificationStyles = `
-                <style id="notification-styles">
-                    .notification {
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: white;
-                        border-radius: 8px;
-                        padding: 15px 20px;
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                        z-index: 10000;
-                        transform: translateX(400px);
-                        transition: transform 0.3s ease;
-                        max-width: 400px;
-                        border-left: 4px solid;
-                    }
+            const notificationStyles = document.createElement('style');
+            notificationStyles.id = 'notification-styles';
+            notificationStyles.textContent = `
+                .notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    border-radius: 8px;
+                    padding: 15px 20px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    z-index: 10000;
+                    transform: translateX(400px);
+                    transition: transform 0.3s ease;
+                    max-width: 400px;
+                    border-left: 4px solid;
+                }
 
-                    .notification-success { border-left-color: #4CAF50; }
-                    .notification-error { border-left-color: #f44336; }
-                    .notification-warning { border-left-color: #ff9800; }
-                    .notification-info { border-left-color: #2196F3; }
+                .notification-success { border-left-color: #FF6D5A; }
+                .notification-error { border-left-color: #f44336; }
+                .notification-warning { border-left-color: #ff9800; }
+                .notification-info { border-left-color: #2196F3; }
 
-                    .notification.show {
-                        transform: translateX(0);
-                    }
+                .notification.show { transform: translateX(0); }
 
-                    .notification-content {
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        font-size: 14px;
-                        font-weight: 500;
-                    }
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
 
-                    .notification-success .notification-content { color: #4CAF50; }
-                    .notification-error .notification-content { color: #f44336; }
-                    .notification-warning .notification-content { color: #ff9800; }
-                    .notification-info .notification-content { color: #2196F3; }
-                </style>
+                .notification-close {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    margin-left: auto;
+                    opacity: 0.7;
+                    transition: opacity 0.3s ease;
+                }
+
+                .notification-close:hover { opacity: 1; }
+
+                .notification-success .notification-content { color: #FF6D5A; }
+                .notification-error .notification-content { color: #f44336; }
+                .notification-warning .notification-content { color: #ff9800; }
+                .notification-info .notification-content { color: #2196F3; }
             `;
-            document.head.insertAdjacentHTML('beforeend', notificationStyles);
+            document.head.appendChild(notificationStyles);
         }
 
         // Mostrar notificación
         document.body.appendChild(notification);
         setTimeout(() => notification.classList.add('show'), 100);
 
-        // Ocultar después de 5 segundos
+        // Auto-ocultar después de 8 segundos
         setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
+            if (notification.parentElement) {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, 8000);
+    }
+
+    // Método para testing
+    testConnection() {
+        return fetch(this.N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                test: true,
+                message: 'Prueba de conexión desde Hospital Calculator',
+                timestamp: new Date().toISOString()
+            })
+        });
     }
 }
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    // Esperar un poco para asegurar que otros scripts se hayan cargado
     setTimeout(() => {
-        window.zapierIntegration = new ZapierIntegration();
-        console.log('Zapier Integration loaded successfully');
+        window.n8nIntegration = new N8nIntegration();
+        console.log('n8n Integration loaded successfully');
     }, 1000);
 });
 
@@ -502,17 +586,17 @@ document.addEventListener('DOMContentLoaded', function() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
-            if (!window.zapierIntegration) {
-                window.zapierIntegration = new ZapierIntegration();
-                console.log('Zapier Integration loaded successfully');
+            if (!window.n8nIntegration) {
+                window.n8nIntegration = new N8nIntegration();
+                console.log('n8n Integration loaded successfully');
             }
         }, 1000);
     });
 } else {
     setTimeout(() => {
-        if (!window.zapierIntegration) {
-            window.zapierIntegration = new ZapierIntegration();
-            console.log('Zapier Integration loaded successfully');
+        if (!window.n8nIntegration) {
+            window.n8nIntegration = new N8nIntegration();
+            console.log('n8n Integration loaded successfully');
         }
     }, 1000);
 }
