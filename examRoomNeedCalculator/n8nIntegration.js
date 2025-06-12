@@ -2,6 +2,7 @@ class N8nIntegration {
     constructor() {
         this.N8N_WEBHOOK_URL = 'https://iancamero0611.app.n8n.cloud/webhook/41bac6d2-8d6d-4c1c-8e87-5dc568f37e62';
         this.isLoading = false;
+        this.hcfCounter = 1; // Hospital Calc File counter
         this.init();
     }
 
@@ -11,7 +12,7 @@ class N8nIntegration {
         this.addEventListeners();
     }
 
-    // Crear botón de sincronización
+    // Create sync button with updated design
     createSyncButton() {
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'n8n-controls';
@@ -25,7 +26,7 @@ class N8nIntegration {
             </div>
         `;
 
-        // Insertar después del header
+        // Insert after header
         const header = document.querySelector('header');
         if (header && header.nextSibling) {
             header.parentNode.insertBefore(buttonContainer, header.nextSibling);
@@ -33,11 +34,11 @@ class N8nIntegration {
             document.body.insertBefore(buttonContainer, document.body.firstChild);
         }
 
-        // Agregar estilos
+        // Add styles
         this.addStyles();
     }
 
-    // Crear indicador de estado
+    // Create status indicator
     createStatusIndicator() {
         const statusDiv = document.getElementById('sync-status');
         if (statusDiv) {
@@ -50,16 +51,16 @@ class N8nIntegration {
         }
     }
 
-    // Agregar estilos CSS
+    // Add CSS styles with #088eb0 color scheme
     addStyles() {
         const styles = `
             <style>
                 .n8n-controls {
-                    background: linear-gradient(135deg, #FF6D5A 0%, #FF5722 100%);
+                    background: linear-gradient(135deg, #088eb0 0%, #065a73 100%);
                     padding: 15px;
                     margin: 10px 0;
                     border-radius: 10px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                    box-shadow: 0 4px 15px rgba(8, 142, 176, 0.2);
                 }
 
                 .sync-container {
@@ -71,7 +72,7 @@ class N8nIntegration {
                 }
 
                 .sync-btn {
-                    background: linear-gradient(45deg, #FF6D5A, #FF5722);
+                    background: linear-gradient(45deg, #088eb0, #065a73);
                     color: white;
                     border: none;
                     padding: 12px 24px;
@@ -83,13 +84,13 @@ class N8nIntegration {
                     align-items: center;
                     gap: 8px;
                     transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(255, 109, 90, 0.3);
+                    box-shadow: 0 4px 15px rgba(8, 142, 176, 0.3);
                 }
 
                 .sync-btn:hover:not(:disabled) {
-                    background: linear-gradient(45deg, #FF5722, #FF6D5A);
+                    background: linear-gradient(45deg, #0aa5cc, #088eb0);
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(255, 109, 90, 0.4);
+                    box-shadow: 0 6px 20px rgba(8, 142, 176, 0.4);
                 }
 
                 .sync-btn:disabled {
@@ -100,7 +101,7 @@ class N8nIntegration {
                 }
 
                 .sync-btn.loading {
-                    background: linear-gradient(45deg, #ff9800, #f57c00);
+                    background: linear-gradient(45deg, #0aa5cc, #088eb0);
                 }
 
                 .sync-status {
@@ -112,39 +113,22 @@ class N8nIntegration {
                     color: white;
                 }
 
-                .status-ready {
-                    color: #E8F5E8;
+                .status-ready, .status-loading, .status-success, .status-error {
+                    color: #E8F8FB;
                     display: flex;
                     align-items: center;
                     gap: 5px;
                 }
 
-                .status-loading {
-                    color: #FFF3E0;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                }
-
-                .status-success {
-                    color: #E8F5E8;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                }
-
-                .status-error {
-                    color: #FFEBEE;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                }
+                .status-loading { color: #FFF8E1; }
+                .status-success { color: #E8F5E8; }
+                .status-error { color: #FFEBEE; }
 
                 .spinner {
                     width: 16px;
                     height: 16px;
                     border: 2px solid #f3f3f3;
-                    border-top: 2px solid #FF6D5A;
+                    border-top: 2px solid #088eb0;
                     border-radius: 50%;
                     animation: spin 1s linear infinite;
                 }
@@ -154,46 +138,214 @@ class N8nIntegration {
                     100% { transform: rotate(360deg); }
                 }
 
-                .webhook-config {
-                    background: rgba(255, 255, 255, 0.1);
-                    padding: 10px;
-                    border-radius: 5px;
-                    margin-top: 10px;
-                    font-size: 12px;
-                    color: white;
-                    backdrop-filter: blur(10px);
-                }
-
-                .webhook-input {
+                /* HCF Modal Styles */
+                .hcf-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
                     width: 100%;
-                    padding: 8px;
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    border-radius: 4px;
-                    font-size: 12px;
-                    margin-top: 5px;
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
                     backdrop-filter: blur(5px);
                 }
 
-                .webhook-input::placeholder {
-                    color: rgba(255, 255, 255, 0.7);
+                .hcf-modal-content {
+                    background: white;
+                    border-radius: 15px;
+                    padding: 30px;
+                    max-width: 500px;
+                    width: 90%;
+                    box-shadow: 0 10px 30px rgba(8, 142, 176, 0.3);
+                    animation: modalAppear 0.3s ease-out;
                 }
 
-                .config-btn {
-                    margin-top: 5px;
-                    padding: 5px 10px;
-                    background: rgba(255, 255, 255, 0.2);
-                    color: white;
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    border-radius: 3px;
+                @keyframes modalAppear {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.9) translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1) translateY(0);
+                    }
+                }
+
+                .hcf-modal-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 3px solid #088eb0;
+                }
+
+                .hcf-modal-header h3 {
+                    margin: 0;
+                    color: #088eb0;
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                .hcf-modal-header i {
+                    color: #088eb0;
+                    font-size: 24px;
+                }
+
+                .hcf-form-group {
+                    margin-bottom: 20px;
+                }
+
+                .hcf-form-group label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: bold;
+                    color: #333;
+                    font-size: 14px;
+                }
+
+                .hcf-form-group input,
+                .hcf-form-group textarea {
+                    width: 100%;
+                    padding: 12px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    transition: border-color 0.3s ease;
+                    box-sizing: border-box;
+                }
+
+                .hcf-form-group input:focus,
+                .hcf-form-group textarea:focus {
+                    outline: none;
+                    border-color: #088eb0;
+                    box-shadow: 0 0 0 3px rgba(8, 142, 176, 0.1);
+                }
+
+                .hcf-form-group textarea {
+                    resize: vertical;
+                    min-height: 80px;
+                }
+
+                .hcf-modal-buttons {
+                    display: flex;
+                    gap: 15px;
+                    justify-content: flex-end;
+                    margin-top: 30px;
+                }
+
+                .hcf-btn {
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
                     cursor: pointer;
                     transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
                 }
 
-                .config-btn:hover {
-                    background: rgba(255, 255, 255, 0.3);
+                .hcf-btn-primary {
+                    background: linear-gradient(45deg, #088eb0, #065a73);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(8, 142, 176, 0.3);
                 }
+
+                .hcf-btn-primary:hover {
+                    background: linear-gradient(45deg, #0aa5cc, #088eb0);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(8, 142, 176, 0.4);
+                }
+
+                .hcf-btn-secondary {
+                    background: #f5f5f5;
+                    color: #666;
+                    border: 2px solid #e0e0e0;
+                }
+
+                .hcf-btn-secondary:hover {
+                    background: #e0e0e0;
+                    transform: translateY(-1px);
+                }
+
+                .hcf-info {
+                    background: rgba(8, 142, 176, 0.1);
+                    border-left: 4px solid #088eb0;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                }
+
+                .hcf-info p {
+                    margin: 0;
+                    color: #065a73;
+                    font-size: 13px;
+                    line-height: 1.5;
+                }
+
+                .hcf-id-display {
+                    background: linear-gradient(45deg, #088eb0, #065a73);
+                    color: white;
+                    padding: 8px 15px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    display: inline-block;
+                    margin-bottom: 15px;
+                }
+
+                /* Notification styles */
+                .notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    border-radius: 8px;
+                    padding: 15px 20px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    z-index: 10001;
+                    transform: translateX(400px);
+                    transition: transform 0.3s ease;
+                    max-width: 400px;
+                    border-left: 4px solid;
+                }
+
+                .notification-success { border-left-color: #088eb0; }
+                .notification-error { border-left-color: #f44336; }
+                .notification-warning { border-left-color: #ff9800; }
+                .notification-info { border-left-color: #088eb0; }
+
+                .notification.show { transform: translateX(0); }
+
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+
+                .notification-close {
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    margin-left: auto;
+                    opacity: 0.7;
+                    transition: opacity 0.3s ease;
+                }
+
+                .notification-close:hover { opacity: 1; }
+
+                .notification-success .notification-content { color: #088eb0; }
+                .notification-error .notification-content { color: #f44336; }
+                .notification-warning .notification-content { color: #ff9800; }
+                .notification-info .notification-content { color: #088eb0; }
 
                 @media (max-width: 768px) {
                     .sync-container {
@@ -202,6 +354,20 @@ class N8nIntegration {
                     }
                     
                     .sync-btn {
+                        width: 100%;
+                        justify-content: center;
+                    }
+
+                    .hcf-modal-content {
+                        margin: 20px;
+                        width: auto;
+                    }
+
+                    .hcf-modal-buttons {
+                        flex-direction: column;
+                    }
+
+                    .hcf-btn {
                         width: 100%;
                         justify-content: center;
                     }
@@ -217,65 +383,142 @@ class N8nIntegration {
         }
     }
 
-    // Agregar event listeners
+    // Add event listeners
     addEventListeners() {
         const syncButton = document.getElementById('syncToAirtable');
         if (syncButton) {
-            syncButton.addEventListener('click', () => this.syncAllData());
+            syncButton.addEventListener('click', () => this.showHCFModal());
         }
 
-        // Agregar configuración de webhook si no está configurado
+        // Add webhook configuration if not configured
         if (this.N8N_WEBHOOK_URL.includes('tu-instancia')) {
             this.showWebhookConfig();
         }
     }
 
-    // Mostrar configuración de webhook
-    showWebhookConfig() {
-        const syncContainer = document.querySelector('.sync-container');
-        if (syncContainer) {
-            const configDiv = document.createElement('div');
-            configDiv.className = 'webhook-config';
-            configDiv.innerHTML = `
-                <strong>⚙️ Configuración de n8n requerida:</strong><br>
-                Por favor, reemplaza la URL del webhook de n8n:<br>
-                <input type="text" class="webhook-input" placeholder="https://tu-instancia.app.n8n.cloud/webhook/hospital-data" id="webhook-input">
-                <button class="config-btn" onclick="n8nIntegration.updateWebhookUrl()">Actualizar Webhook</button>
-                <div style="margin-top: 8px; font-size: 11px; opacity: 0.8;">
-                    💡 Copia la URL de tu webhook desde n8n después de crear el workflow
+    // Show HCF (Hospital Calc File) modal before sync
+    showHCFModal() {
+        const modal = document.createElement('div');
+        modal.className = 'hcf-modal';
+        modal.innerHTML = `
+            <div class="hcf-modal-content">
+                <div class="hcf-modal-header">
+                    <i class="fas fa-file-medical"></i>
+                    <h3>Create Hospital Calc File (HCF)</h3>
                 </div>
-            `;
-            syncContainer.appendChild(configDiv);
-        }
+                
+                <div class="hcf-id-display">
+                    <i class="fas fa-hashtag"></i> HCF ID: ${this.hcfCounter}
+                </div>
+
+                <div class="hcf-info">
+                    <p><strong>About HCF:</strong> Each sync creates a Hospital Calc File that captures your input values and calculated results. This helps track different scenarios and project variations.</p>
+                </div>
+
+                <form id="hcfForm">
+                    <div class="hcf-form-group">
+                        <label for="projectName">
+                            <i class="fas fa-hospital"></i> Project Name *
+                        </label>
+                        <input 
+                            type="text" 
+                            id="projectName" 
+                            name="projectName" 
+                            placeholder="e.g., Hospital Cerro Colorado ESSALUD"
+                            required
+                        />
+                    </div>
+
+                    <div class="hcf-form-group">
+                        <label for="projectDescription">
+                            <i class="fas fa-align-left"></i> Project Description *
+                        </label>
+                        <textarea 
+                            id="projectDescription" 
+                            name="projectDescription" 
+                            placeholder="e.g., Using data from 1980-2010 with 15% growth projection"
+                            required
+                        ></textarea>
+                    </div>
+                </form>
+
+                <div class="hcf-modal-buttons">
+                    <button type="button" class="hcf-btn hcf-btn-secondary" onclick="this.closest('.hcf-modal').remove()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="button" class="hcf-btn hcf-btn-primary" onclick="n8nIntegration.createHCFAndSync()">
+                        <i class="fas fa-save"></i>
+                        Create HCF & Sync
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Focus on first input
+        setTimeout(() => {
+            const firstInput = modal.querySelector('#projectName');
+            if (firstInput) firstInput.focus();
+        }, 100);
+
+        // Handle form submission with Enter key
+        const form = modal.querySelector('#hcfForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.createHCFAndSync();
+        });
     }
 
-    // Actualizar URL del webhook
-    updateWebhookUrl() {
-        const input = document.getElementById('webhook-input');
-        if (input && input.value.trim()) {
-            this.N8N_WEBHOOK_URL = input.value.trim();
-            document.querySelector('.webhook-config').remove();
-            this.updateStatus('ready', 'n8n Webhook configurado - Listo para sincronizar');
+    // Create HCF and proceed with sync
+    async createHCFAndSync() {
+        const modal = document.querySelector('.hcf-modal');
+        const projectName = document.getElementById('projectName').value.trim();
+        const projectDescription = document.getElementById('projectDescription').value.trim();
+
+        // Validate inputs
+        if (!projectName || !projectDescription) {
+            this.showNotification('Please fill in all required fields', 'error');
+            return;
         }
+
+        // Create HCF data
+        const hcfData = {
+            id: this.hcfCounter,
+            creation_date: new Date().toISOString(),
+            project_name: projectName,
+            project_description: projectDescription
+        };
+
+        // Close modal
+        modal.remove();
+
+        // Increment counter for next HCF
+        this.hcfCounter++;
+
+        // Start sync process
+        await this.syncAllData(hcfData);
     }
 
-    // Obtener todos los datos calculados
-    getAllCalculatedData() {
+    // Get all calculated data with HCF information
+    getAllCalculatedData(hcfData) {
         const data = [];
         const activeYearButtons = document.querySelectorAll(".year-button.active");
         
         if (activeYearButtons.length === 0) {
-            throw new Error('No hay años seleccionados. Por favor, selecciona al menos un año para sincronizar.');
+            throw new Error('No years selected. Please select at least one year to sync.');
         }
 
         activeYearButtons.forEach(btn => {
             const year = parseInt(btn.dataset.year, 10);
             
-            // Obtener datos de volumen promedio
+            // Get average volume data
             const avgVolumeData = this.getRowData(year, 'average');
             if (avgVolumeData) {
                 data.push({
                     ...avgVolumeData,
+                    ...hcfData, // Include HCF data
                     calculation_type: 'Average Volume',
                     timestamp: new Date().toISOString(),
                     source: 'Hospital Calculator',
@@ -283,11 +526,12 @@ class N8nIntegration {
                 });
             }
 
-            // Obtener datos de volumen pico
+            // Get peak volume data
             const peakVolumeData = this.getRowData(year, 'peak');
             if (peakVolumeData) {
                 data.push({
                     ...peakVolumeData,
+                    ...hcfData, // Include HCF data
                     calculation_type: 'Peak Month Volume',
                     timestamp: new Date().toISOString(),
                     source: 'Hospital Calculator',
@@ -299,7 +543,7 @@ class N8nIntegration {
         return data;
     }
 
-    // Obtener datos de una fila específica
+    // Get data from specific row
     getRowData(year, type) {
         let visitsElement, roomsElement, providersElement, productivityElement;
 
@@ -328,33 +572,38 @@ class N8nIntegration {
         };
     }
 
-    // Enviar datos a n8n
+    // Send data to n8n with CORS handling
     async sendDataToN8n(dataArray) {
         if (this.N8N_WEBHOOK_URL.includes('tu-instancia')) {
-            throw new Error('Por favor, configura tu URL de webhook de n8n primero.');
+            throw new Error('Please configure your n8n webhook URL first.');
         }
 
         const results = [];
         
-        // Enviar datos de uno en uno para mejor control
+        // Send data one by one for better control
         for (const data of dataArray) {
             try {
-                console.log('Enviando a n8n:', data);
+                console.log('Sending to n8n:', data);
                 
-                const response = await fetch(this.N8N_WEBHOOK_URL, {
+                // Prepare request with CORS handling
+                const requestOptions = {
                     method: 'POST',
+                    mode: 'cors', // Handle CORS explicitly
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(data)
-                });
+                };
+
+                const response = await fetch(this.N8N_WEBHOOK_URL, requestOptions);
 
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
 
-                // n8n puede devolver JSON o texto plano
+                // n8n can return JSON or plain text
                 let result;
                 try {
                     result = await response.json();
@@ -369,15 +618,24 @@ class N8nIntegration {
                     status: response.status 
                 });
                 
-                // Pequeña pausa entre requests para evitar saturar n8n
+                // Small pause between requests to avoid saturating n8n
                 await new Promise(resolve => setTimeout(resolve, 300));
                 
             } catch (error) {
-                console.error('Error enviando a n8n:', error);
+                console.error('Error sending to n8n:', error);
+                
+                // Handle different types of errors
+                let errorMessage = error.message;
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = 'Network error - check your internet connection and n8n webhook URL';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'CORS error - n8n webhook may not allow cross-origin requests';
+                }
+                
                 results.push({ 
                     success: false, 
                     data: data, 
-                    error: error.message 
+                    error: errorMessage 
                 });
             }
         }
@@ -385,69 +643,69 @@ class N8nIntegration {
         return results;
     }
 
-    // Sincronizar todos los datos
-    async syncAllData() {
+    // Sync all data with HCF information
+    async syncAllData(hcfData) {
         if (this.isLoading) return;
 
         this.isLoading = true;
         const syncButton = document.getElementById('syncToAirtable');
         
         try {
-            // Actualizar UI
+            // Update UI
             syncButton.disabled = true;
             syncButton.innerHTML = '<div class="spinner"></div> Syncing via n8n...';
-            this.updateStatus('loading', 'Preparando datos para n8n...');
+            this.updateStatus('loading', 'Preparing HCF data for n8n...');
 
-            // Obtener datos
-            const dataToSync = this.getAllCalculatedData();
+            // Get data
+            const dataToSync = this.getAllCalculatedData(hcfData);
             
             if (dataToSync.length === 0) {
-                throw new Error('No hay datos para sincronizar.');
+                throw new Error('No data to sync.');
             }
 
-            this.updateStatus('loading', `Enviando ${dataToSync.length} registros a n8n...`);
+            this.updateStatus('loading', `Sending HCF #${hcfData.id} with ${dataToSync.length} records to n8n...`);
 
-            // Enviar a n8n
+            // Send to n8n
             const results = await this.sendDataToN8n(dataToSync);
 
-            // Analizar resultados
+            // Analyze results
             const successful = results.filter(r => r.success).length;
             const failed = results.filter(r => !r.success).length;
 
             if (failed === 0) {
-                this.updateStatus('success', `✅ ${successful} registros procesados por n8n → Airtable`);
-                this.showNotification(`¡${successful} registros sincronizados exitosamente a través de n8n!`, 'success');
+                this.updateStatus('success', `✅ HCF #${hcfData.id}: ${successful} records processed via n8n → Airtable`);
+                this.showNotification(`HCF #${hcfData.id} "${hcfData.project_name}" synced successfully! ${successful} records processed.`, 'success');
             } else {
                 const errorMessages = results
                     .filter(r => !r.success)
                     .map(r => r.error)
                     .join(', ');
                 
-                this.updateStatus('error', `⚠️ ${successful} exitosos, ${failed} fallidos`);
-                this.showNotification(`Sincronización parcial: ${successful} exitosos, ${failed} fallidos. Errores: ${errorMessages}`, 'warning');
+                this.updateStatus('error', `⚠️ HCF #${hcfData.id}: ${successful} successful, ${failed} failed`);
+                this.showNotification(`HCF #${hcfData.id} partial sync: ${successful} successful, ${failed} failed. Errors: ${errorMessages}`, 'warning');
             }
 
-            // Log detallado para debugging
-            console.log('Resultados de sincronización n8n:', results);
+            // Detailed log for debugging
+            console.log('n8n sync results:', results);
 
         } catch (error) {
             console.error('Error syncing data via n8n:', error);
             this.updateStatus('error', `❌ Error: ${error.message}`);
-            this.showNotification(`Error en n8n: ${error.message}`, 'error');
+            this.showNotification(`n8n Error: ${error.message}`, 'error');
         } finally {
-            // Restaurar UI
+            // Restore UI
             this.isLoading = false;
             syncButton.disabled = false;
             syncButton.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Sync to Airtable via n8n';
             
-            // Volver al estado ready después de 5 segundos
+            // Return to ready state after 5 seconds
             setTimeout(() => {
                 this.updateStatus('ready', 'Ready to sync with n8n');
             }, 5000);
         }
     }
 
-    // Actualizar estado visual
+    // Update visual status
     updateStatus(type, message) {
         const statusDiv = document.getElementById('sync-status');
         if (!statusDiv) return;
@@ -478,7 +736,7 @@ class N8nIntegration {
         `;
     }
 
-    // Mostrar notificación
+    // Show notification
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
@@ -490,66 +748,11 @@ class N8nIntegration {
             </div>
         `;
 
-        // Agregar estilos de notificación si no existen
-        if (!document.getElementById('notification-styles')) {
-            const notificationStyles = document.createElement('style');
-            notificationStyles.id = 'notification-styles';
-            notificationStyles.textContent = `
-                .notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: white;
-                    border-radius: 8px;
-                    padding: 15px 20px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                    z-index: 10000;
-                    transform: translateX(400px);
-                    transition: transform 0.3s ease;
-                    max-width: 400px;
-                    border-left: 4px solid;
-                }
-
-                .notification-success { border-left-color: #FF6D5A; }
-                .notification-error { border-left-color: #f44336; }
-                .notification-warning { border-left-color: #ff9800; }
-                .notification-info { border-left-color: #2196F3; }
-
-                .notification.show { transform: translateX(0); }
-
-                .notification-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    font-size: 14px;
-                    font-weight: 500;
-                }
-
-                .notification-close {
-                    background: none;
-                    border: none;
-                    font-size: 18px;
-                    cursor: pointer;
-                    margin-left: auto;
-                    opacity: 0.7;
-                    transition: opacity 0.3s ease;
-                }
-
-                .notification-close:hover { opacity: 1; }
-
-                .notification-success .notification-content { color: #FF6D5A; }
-                .notification-error .notification-content { color: #f44336; }
-                .notification-warning .notification-content { color: #ff9800; }
-                .notification-info .notification-content { color: #2196F3; }
-            `;
-            document.head.appendChild(notificationStyles);
-        }
-
-        // Mostrar notificación
+        // Show notification
         document.body.appendChild(notification);
         setTimeout(() => notification.classList.add('show'), 100);
 
-        // Auto-ocultar después de 8 segundos
+        // Auto-hide after 8 seconds
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.classList.remove('show');
@@ -558,23 +761,31 @@ class N8nIntegration {
         }, 8000);
     }
 
-    // Método para testing
-    testConnection() {
-        return fetch(this.N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                test: true,
-                message: 'Prueba de conexión desde Hospital Calculator',
-                timestamp: new Date().toISOString()
-            })
-        });
+    // Method for testing connection
+    async testConnection() {
+        try {
+            const response = await fetch(this.N8N_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    test: true,
+                    message: 'Connection test from Hospital Calculator',
+                    timestamp: new Date().toISOString()
+                })
+            });
+            return response;
+        } catch (error) {
+            console.error('Connection test failed:', error);
+            throw error;
+        }
     }
 }
 
-// Inicializar cuando el DOM esté listo
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         window.n8nIntegration = new N8nIntegration();
@@ -582,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
-// También inicializar si el DOM ya está listo
+// Also initialize if DOM is already ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
