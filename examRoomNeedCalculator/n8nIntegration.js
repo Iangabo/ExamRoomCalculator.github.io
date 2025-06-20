@@ -17,14 +17,17 @@ class N8nIntegration {
         const buttonContainer = document.createElement('div');
         buttonContainer.className = 'n8n-controls';
         buttonContainer.innerHTML = `
-            <div class="sync-container">
-                <button id="syncToAirtable" class="sync-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    Sync to Airtable via n8n
-                </button>
-                <div id="sync-status" class="sync-status"></div>
-            </div>
-        `;
+        <div class="sync-container with-title">
+            <h2 class="sync-title">Validating Key Planning Units</h2>
+            <button id="syncToAirtable" class="sync-btn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Sync to Airtable via n8n
+            </button>
+            <div id="sync-status" class="sync-status"></div>
+        </div>
+    `;
+
+
 
         // Insert after header
         const header = document.querySelector('header');
@@ -58,15 +61,29 @@ class N8nIntegration {
                 .n8n-controls {
                     background: linear-gradient(135deg, #088eb0 0%, #065a73 100%);
                     padding: 15px;
-                    margin: 10px 0;
+                    margin: -19px 0;
                     border-radius: 10px;
                     box-shadow: 0 4px 15px rgba(8, 142, 176, 0.2);
+                }
+                
+                .sync-header {
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
+
+                .sync-title {
+                    margin: 0;
+                    padding: 0;
+                    text-align: left !important;
+                    font-size: 30px;
+                    font-weight: bold;
+                    color: white;
+                    margin-bottom: 0px;
                 }
 
                 .sync-container {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
                     gap: 15px;
                     flex-wrap: wrap;
                 }
@@ -78,13 +95,14 @@ class N8nIntegration {
                     padding: 12px 24px;
                     border-radius: 25px;
                     cursor: pointer;
-                    font-weight: bold;
+                    font-weight: Helvetica;
                     font-size: 14px;
                     display: flex;
                     align-items: center;
                     gap: 8px;
                     transition: all 0.3s ease;
                     box-shadow: 0 4px 15px rgba(8, 142, 176, 0.3);
+                    margin: auto;
                 }
 
                 .sync-btn:hover:not(:disabled) {
@@ -98,6 +116,7 @@ class N8nIntegration {
                     cursor: not-allowed;
                     transform: none;
                     box-shadow: none;
+                    
                 }
 
                 .sync-btn.loading {
@@ -105,12 +124,12 @@ class N8nIntegration {
                 }
 
                 .sync-status {
-                    display: flex;
-                    align-items: center;
                     gap: 8px;
                     font-size: 14px;
                     font-weight: 500;
                     color: white;
+                    display: block;
+                    margin: 0 auto;
                 }
 
                 .status-ready, .status-loading, .status-success, .status-error {
