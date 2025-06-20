@@ -36,6 +36,9 @@ function addExportButton() {
   const style = document.createElement('style');
   style.textContent = `
       .export-button-container {
+          position: absolute;  /* Independent positioning */
+          top: 0px;          /* Distance from top */
+          left: -1800px;          /* Distance from left */
           display: flex;
           justify-content: flex-end;
           width: 100%;

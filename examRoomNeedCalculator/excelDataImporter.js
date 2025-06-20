@@ -1,11 +1,73 @@
-// excelDataImporter.js 
+// excelDataImporter.js - Versión mejorada con CSS personalizable
 document.addEventListener("DOMContentLoaded", function() {
-    // Declare global variable if it does not exist
+    
+    // ============== CONFIGURACIÓN DE ESTILOS CSS ==============
+    const CSS_STYLES = {
+        importButton: {
+            backgroundColor: "#4CAF50",
+            color: "white",
+            padding: "10px 15px",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            marginTop: "-1000px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+            transition: "all 0.3s ease"
+        },
+        importButtonHover: {
+            backgroundColor: "#45a049",
+            transform: "translateY(-1px)",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.3)"
+        },
+        successMessage: {
+            backgroundColor: "#4CAF50",
+            color: "white",
+            padding: "15px 20px",
+            borderRadius: "8px",
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: "1000",
+            fontSize: "14px",
+            fontWeight: "500",
+            boxShadow: "0 4px 12px rgba(76, 175, 80, 0.3)",
+            border: "1px solid #45a049"
+        },
+        errorMessage: {
+            backgroundColor: "#f44336",
+            color: "white",
+            padding: "15px 20px",
+            borderRadius: "8px",
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: "1000",
+            fontSize: "14px",
+            fontWeight: "500",
+            boxShadow: "0 4px 12px rgba(244, 67, 54, 0.3)",
+            border: "1px solid #d32f2f"
+        }
+    };
+
+    // ============== FUNCIONES DE UTILIDAD PARA CSS ==============
+    function applyStyles(element, styles) {
+        Object.assign(element.style, styles);
+    }
+
+    function createStyledElement(tagName, styles, innerHTML = '') {
+        const element = document.createElement(tagName);
+        if (innerHTML) element.innerHTML = innerHTML;
+        applyStyles(element, styles);
+        return element;
+    }
+
+    // ============== VARIABLES GLOBALES ==============
     window.roomUtilizationTarget = window.roomUtilizationTarget || 75; 
     
     // Create getPrecalculatedData function if it does not exist
     window.getPrecalculatedData = window.getPrecalculatedData || function() {
-        // Default implementation that collects data from the UI
         const activeYears = Array.from(document.querySelectorAll(".year-button.active"))
             .map(btn => parseInt(btn.dataset.year));
         
@@ -19,56 +81,119 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
     
-    // Add Excel import button to the UI
-    const controlsContainer = document.querySelector(".controls-container") || document.body;
-    const importButton = document.createElement("button");
-    importButton.id = "importExcelBtn";
-    importButton.className = "import-btn";
-    importButton.innerHTML = '<i class="fas fa-file-excel"></i> Import Excel data';
-    importButton.style.backgroundColor = "#4CAF50";
-    importButton.style.color = "white";
-    importButton.style.padding = "10px 15px";
-    importButton.style.border = "none";
-    importButton.style.borderRadius = "4px";
-    importButton.style.cursor = "pointer";
-    importButton.style.marginTop = "50px";
-    
-    controlsContainer.appendChild(importButton);
-    
-    // Create file input field (hidden)
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.id = "excelFileInput";
-    fileInput.accept = ".xlsx, .xls";
-    fileInput.style.display = "none";
-    
-    controlsContainer.appendChild(fileInput);
-    
-    // Manage import button click
-    importButton.addEventListener("click", function() {
-        fileInput.click();
-    });
-    
-    // Handle change in file input field
-    fileInput.addEventListener("change", function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    // ============== CREACIÓN DE LA INTERFAZ ==============
+    function createImportInterface() {
+        const controlsContainer = document.querySelector(".controls-container") || document.body;
         
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            processExcelFile(data);
-        };
-        reader.readAsArrayBuffer(file);
-    });
+        // Crear botón de importación con estilos personalizables
+        const importButton = createStyledElement(
+            "button",
+            CSS_STYLES.importButton,
+            '<i class="fas fa-file-excel"></i> Import Excel data'
+        );
+        importButton.id = "importExcelBtn";
+        importButton.className = "import-btn";
+        
+        // Agregar efectos hover
+        importButton.addEventListener("mouseenter", function() {
+            applyStyles(this, CSS_STYLES.importButtonHover);
+        });
+        
+        importButton.addEventListener("mouseleave", function() {
+            applyStyles(this, CSS_STYLES.importButton);
+        });
+        
+        controlsContainer.appendChild(importButton);
+        
+        // Crear input de archivo (oculto)
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.id = "excelFileInput";
+        fileInput.accept = ".xlsx, .xls";
+        fileInput.style.display = "none";
+        
+        controlsContainer.appendChild(fileInput);
+        
+        return { importButton, fileInput };
+    }
     
-    // Process Excel file using SheetJS
+    // ============== MANEJO DE EVENTOS ==============
+    function setupEventListeners(importButton, fileInput) {
+        // Clic en botón de importación
+        importButton.addEventListener("click", function() {
+            fileInput.click();
+        });
+        
+        // Cambio en input de archivo
+        fileInput.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            showLoadingMessage();
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                processExcelFile(data);
+            };
+            reader.onerror = function() {
+                showMessage("Error al leer el archivo", "error");
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    }
+    
+    // ============== MENSAJES DE ESTADO ==============
+    function showMessage(text, type = "success") {
+        const messageStyles = type === "success" ? CSS_STYLES.successMessage : CSS_STYLES.errorMessage;
+        
+        const message = createStyledElement("div", messageStyles, text);
+        message.className = `import-${type}`;
+        
+        document.body.appendChild(message);
+        
+        // Animación de entrada
+        message.style.opacity = "0";
+        message.style.transform = "translateX(100%)";
+        
+        setTimeout(() => {
+            message.style.transition = "all 0.3s ease";
+            message.style.opacity = "1";
+            message.style.transform = "translateX(0)";
+        }, 10);
+        
+        // Remover después de 3 segundos
+        setTimeout(() => {
+            message.style.opacity = "0";
+            message.style.transform = "translateX(100%)";
+            setTimeout(() => message.remove(), 300);
+        }, 3000);
+    }
+    
+    function showLoadingMessage() {
+        const loading = createStyledElement(
+            "div",
+            {
+                ...CSS_STYLES.successMessage,
+                backgroundColor: "#2196F3"
+            },
+            "Procesando archivo Excel..."
+        );
+        loading.id = "loadingMessage";
+        document.body.appendChild(loading);
+    }
+    
+    function hideLoadingMessage() {
+        const loading = document.getElementById("loadingMessage");
+        if (loading) loading.remove();
+    }
+    
+    // ============== PROCESAMIENTO DE EXCEL ==============
     function processExcelFile(data) {
         try {
-            // Analyze the Excel file
             const workbook = XLSX.read(data, { type: 'array' });
             
-            // Search for parameter sheet (first sheet or with specific name)
+            // Buscar hoja de parámetros
             let parametersSheet;
             if (workbook.SheetNames.includes("Parameters")) {
                 parametersSheet = "Parameters";
@@ -77,29 +202,31 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             
             const worksheet = workbook.Sheets[parametersSheet];
-            
-            // Convert to JSON
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
             
             if (jsonData.length === 0) {
-                alert("No data were found in the Excel file.");
+                hideLoadingMessage();
+                showMessage("No se encontraron datos en el archivo Excel", "error");
                 return;
             }
             
-            console.log("Data extracted:", jsonData);
+            console.log("Datos extraídos:", jsonData);
             
-            // Extract data and update entries and calculations
+            // Extraer datos y actualizar UI
             extractParametersAndUpdateUI(jsonData, workbook);
             
+            hideLoadingMessage();
+            showMessage("¡Datos Excel importados correctamente!");
+            
         } catch (error) {
-            console.error("Error processing Excel file:", error);
-            alert("Error processing Excel file. Check formatting and try again.");
+            console.error("Error procesando archivo Excel:", error);
+            hideLoadingMessage();
+            showMessage("Error procesando archivo Excel. Verifique el formato e intente nuevamente.", "error");
         }
     }
     
-    // Extract data from Excel and update UI elements
+    // ============== EXTRACCIÓN Y ACTUALIZACIÓN DE DATOS ==============
     function extractParametersAndUpdateUI(jsonData, workbook) {
-        // Mapping expected column names in Excel to input IDs
         const mappings = {
             "Annual Growth Target (%)": "annual-growth-target",
             "Average Clinic Visit Time (min)": "avg-clinic-visit-time",
@@ -110,10 +237,10 @@ document.addEventListener("DOMContentLoaded", function() {
             "Peak Month Volume": "peak-month-volume",
             "Provider Productivity Current": "provider-productivity-current",
             "Provider Productivity Target": "provider-productivity-target",
-            "Room Utilization Target (%)": "room-utilization-target" // Custom field for ring chart
+            "Room Utilization Target (%)": "room-utilization-target"
         };
         
-        // Search for parameters in key-value pair format
+        // Procesar parámetros
         for (const row of jsonData) {
             if (row.Parameter && row.Value !== undefined) {
                 const paramName = row.Parameter;
@@ -124,71 +251,56 @@ document.addEventListener("DOMContentLoaded", function() {
                     const inputElement = document.getElementById(inputId);
                     if (inputElement) {
                         inputElement.value = paramValue;
-                        // Trigger input event to update calculations
                         const event = new Event('input', { bubbles: true });
                         inputElement.dispatchEvent(event);
                     }
                     
-                    // Special case for target room utilization
                     if (paramName === "Room Utilization Target (%)") {
                         window.roomUtilizationTarget = paramValue;
                     }
                 }
                 
-                // Find visit time breakdown data for the pie chart
+                // Manejar datos de tiempo de visita
                 if (paramName === "MA Visit Time" || paramName === "Wait Time" || paramName === "Provider Visit Time") {
                     handleVisitTimeData(paramName, paramValue);
                 }
             }
         }
         
-        // Extract year-specific data (from other sheets)
+        // Procesar hojas de resultados
+        processResultSheets(workbook);
+        
+        // Actualizar cálculos y gráficos
+        updateCalculationsAndCharts();
+    }
+    
+    // ============== PROCESAMIENTO DE HOJAS DE RESULTADOS ==============
+    function processResultSheets(workbook) {
         try {
-            // Attempt to load the “Results” sheet if it exists.
             if (workbook.SheetNames.includes("Results")) {
                 const resultsSheet = workbook.Sheets["Results"];
                 const resultsData = XLSX.utils.sheet_to_json(resultsSheet);
-                
                 if (resultsData.length > 0) {
                     processYearData(resultsData);
                 }
             }
             
-            // Attempt to load the “Peak Results” sheet if it exists.
             if (workbook.SheetNames.includes("Peak Results")) {
                 const peakSheet = workbook.Sheets["Peak Results"];
                 const peakData = XLSX.utils.sheet_to_json(peakSheet);
-                
                 if (peakData.length > 0) {
                     processPeakData(peakData);
                 }
             }
         } catch (error) {
-            console.error("Error when processing result sheets:", error);
+            console.error("Error procesando hojas de resultados:", error);
         }
-        
-        // Trigger calculations and chart updates
-        if (typeof window.calculateDataForSelectedYears === "function") {
-            window.calculateDataForSelectedYears();
-        }
-        
-        if (typeof window.updateChart === "function") {
-            window.updateChart(getPrecalculatedData());
-        }
-        
-        // Update ring chart if it exists
-        if (typeof window.updateDonnutChart === "function") {
-            window.updateDonnutChart();
-        }
-        
-        // Show success message
-        showImportSuccess();
     }
     
-    // Manage visit time data
+    // ============== FUNCIONES DE DATOS ==============
     function handleVisitTimeData(paramName, paramValue) {
         if (!window.breakdownValues) {
-            window.breakdownValues = [12.5, 13, 19.5]; // Default values [MA, Wait, Provider].
+            window.breakdownValues = [12.5, 13, 19.5];
         }
         
         switch (paramName) {
@@ -203,17 +315,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 break;
         }
         
-        // Update pie chart if function exists
         if (typeof window.updatePieChart === "function") {
             window.updatePieChart();
         }
     }
     
-    // Process average year data
     function processYearData(resultsData) {
         const yearData = [];
         
-        //  Search rows with year information
         resultsData.forEach(row => {
             if (row.Year && !isNaN(parseInt(row.Year))) {
                 yearData.push({
@@ -229,7 +338,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (yearData.length > 0) {
             selectYearsFromData(yearData);
             
-            // Maintain values in table if possible
             yearData.forEach(data => {
                 updateTableCellsIfExists("visits", data.year, data.visits);
                 updateTableCellsIfExists("rooms", data.year, data.rooms);  
@@ -239,7 +347,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // Process peak month data
     function processPeakData(peakData) {
         peakData.forEach(row => {
             if (row.Year && !isNaN(parseInt(row.Year))) {
@@ -253,7 +360,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Update table cells if they exist
     function updateTableCellsIfExists(prefix, year, value) {
         if (value === null || value === undefined) return;
         
@@ -264,68 +370,58 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // Select years based on imported data
     function selectYearsFromData(yearData) {
-        // Check required functions
-        const hasAddOutputRow = typeof window.addOutputRow === 'function';
-        const hasAddOutputRowPeak = typeof window.addOutputRowPeak === 'function';
-        const hasAddOutputRowProviderProductivity = typeof window.addOutputRowProviderProductivity === 'function';
-        const hasAddOutputRowProviderProductivityPeak = typeof window.addOutputRowProviderProductivityPeak === 'function';
+        const functions = {
+            hasAddOutputRow: typeof window.addOutputRow === 'function',
+            hasAddOutputRowPeak: typeof window.addOutputRowPeak === 'function',
+            hasAddOutputRowProviderProductivity: typeof window.addOutputRowProviderProductivity === 'function',
+            hasAddOutputRowProviderProductivityPeak: typeof window.addOutputRowProviderProductivityPeak === 'function',
+            hasRemoveOutputRow: typeof window.removeOutputRow === 'function',
+            hasRemoveOutputRowPeak: typeof window.removeOutputRowPeak === 'function',
+            hasRemoveOutputRowProviderProductivity: typeof window.removeOutputRowProviderProductivity === 'function',
+            hasRemoveOutputRowProviderProductivityPeak: typeof window.removeOutputRowProviderProductivityPeak === 'function'
+        };
         
-        const hasRemoveOutputRow = typeof window.removeOutputRow === 'function';
-        const hasRemoveOutputRowPeak = typeof window.removeOutputRowPeak === 'function';
-        const hasRemoveOutputRowProviderProductivity = typeof window.removeOutputRowProviderProductivity === 'function';
-        const hasRemoveOutputRowProviderProductivityPeak = typeof window.removeOutputRowProviderProductivityPeak === 'function';
-        
-        // Clear previously selected years
+        // Limpiar años previamente seleccionados
         document.querySelectorAll(".year-button.active").forEach(btn => {
             btn.classList.remove("active");
             const year = parseInt(btn.dataset.year, 10);
             
-            if (hasRemoveOutputRow) window.removeOutputRow(year);
-            if (hasRemoveOutputRowPeak) window.removeOutputRowPeak(year);
-            if (hasRemoveOutputRowProviderProductivity) window.removeOutputRowProviderProductivity(year);
-            if (hasRemoveOutputRowProviderProductivityPeak) window.removeOutputRowProviderProductivityPeak(year);
+            if (functions.hasRemoveOutputRow) window.removeOutputRow(year);
+            if (functions.hasRemoveOutputRowPeak) window.removeOutputRowPeak(year);
+            if (functions.hasRemoveOutputRowProviderProductivity) window.removeOutputRowProviderProductivity(year);
+            if (functions.hasRemoveOutputRowProviderProductivityPeak) window.removeOutputRowProviderProductivityPeak(year);
         });
         
-        // Select years of data
+        // Seleccionar años de los datos
         yearData.forEach(data => {
             const yearBtn = document.querySelector(`.year-button[data-year="${data.year}"]`);
             if (yearBtn) {
                 yearBtn.classList.add("active");
                 
-                if (hasAddOutputRow) window.addOutputRow(data.year);
-                if (hasAddOutputRowPeak) window.addOutputRowPeak(data.year);
-                if (hasAddOutputRowProviderProductivity) window.addOutputRowProviderProductivity(data.year);
-                if (hasAddOutputRowProviderProductivityPeak) window.addOutputRowProviderProductivityPeak(data.year);
+                if (functions.hasAddOutputRow) window.addOutputRow(data.year);
+                if (functions.hasAddOutputRowPeak) window.addOutputRowPeak(data.year);
+                if (functions.hasAddOutputRowProviderProductivity) window.addOutputRowProviderProductivity(data.year);
+                if (functions.hasAddOutputRowProviderProductivityPeak) window.addOutputRowProviderProductivityPeak(data.year);
             }
         });
     }
     
-    // Show success message
-    function showImportSuccess() {
-        const successMsg = document.createElement("div");
-        successMsg.className = "import-success";
-        successMsg.innerHTML = "¡Datos Excel importados correctamente!";
-        successMsg.style.backgroundColor = "#4CAF50";
-        successMsg.style.color = "white";
-        successMsg.style.padding = "10px";
-        successMsg.style.borderRadius = "4px";
-        successMsg.style.position = "fixed";
-        successMsg.style.top = "20px";
-        successMsg.style.right = "20px";
-        successMsg.style.zIndex = "1000";
+    function updateCalculationsAndCharts() {
+        if (typeof window.calculateDataForSelectedYears === "function") {
+            window.calculateDataForSelectedYears();
+        }
         
-        document.body.appendChild(successMsg);
+        if (typeof window.updateChart === "function") {
+            window.updateChart(getPrecalculatedData());
+        }
         
-        setTimeout(() => {
-            successMsg.style.opacity = "0";
-            successMsg.style.transition = "opacity 0.5s";
-            setTimeout(() => successMsg.remove(), 500);
-        }, 3000);
+        if (typeof window.updateDonnutChart === "function") {
+            window.updateDonnutChart();
+        }
     }
     
-    // Check if we need to load the SheetJS library
+    // ============== CARGA DE LIBRERÍAS ==============
     function loadSheetJS() {
         if (typeof XLSX !== 'undefined') return Promise.resolve();
         
@@ -338,19 +434,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // Load required libraries
-    loadSheetJS()
-        .then(() => {
-            console.log("Funcionalidad de importación Excel lista");
-        })
-        .catch(error => {
-            console.error("Error al cargar la biblioteca SheetJS:", error);
-        });
-    
-    // To expose functions that may be needed
+    // ============== FUNCIONES AUXILIARES ==============
+    // Implementaciones por defecto de las funciones de tabla
     window.addOutputRow = window.addOutputRow || function(year) {
         console.log(`Función addOutputRow no definida, intentando añadir fila para ${year}`);
-        // Basic implementation if nonexistent
         const tbody = document.getElementById("outputTbody");
         if (tbody) {
             const tr = document.createElement("tr");
@@ -410,23 +497,74 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
     
+    // Funciones de eliminación (simplificadas)
     window.removeOutputRow = window.removeOutputRow || function(year) {
-        const row = document.querySelector(`#outputTbody tr td:first-child:contains('${year}')`).parentNode;
-        if (row) row.remove();
+        const rows = document.querySelectorAll('#outputTbody tr');
+        rows.forEach(row => {
+            if (row.querySelector('.yearCell')?.textContent == year) {
+                row.remove();
+            }
+        });
     };
     
     window.removeOutputRowPeak = window.removeOutputRowPeak || function(year) {
-        const row = document.querySelector(`#outputTbody2 tr td:first-child:contains('${year}')`).parentNode;
-        if (row) row.remove();
+        const rows = document.querySelectorAll('#outputTbody2 tr');
+        rows.forEach(row => {
+            if (row.querySelector('.yearCell')?.textContent == year) {
+                row.remove();
+            }
+        });
     };
     
     window.removeOutputRowProviderProductivity = window.removeOutputRowProviderProductivity || function(year) {
-        const row = document.querySelector(`#outputTbody3 tr td:first-child:contains('${year}')`).parentNode;
-        if (row) row.remove();
+        const rows = document.querySelectorAll('#outputTbody3 tr');
+        rows.forEach(row => {
+            if (row.firstElementChild?.textContent == year) {
+                row.remove();
+            }
+        });
     };
     
     window.removeOutputRowProviderProductivityPeak = window.removeOutputRowProviderProductivityPeak || function(year) {
-        const row = document.querySelector(`#outputTbody4 tr td:first-child:contains('${year}')`).parentNode;
-        if (row) row.remove();
+        const rows = document.querySelectorAll('#outputTbody4 tr');
+        rows.forEach(row => {
+            if (row.firstElementChild?.textContent == year) {
+                row.remove();
+            }
+        });
+    };
+    
+    // ============== INICIALIZACIÓN ==============
+    // Cargar librerías y configurar interfaz
+    loadSheetJS()
+        .then(() => {
+            console.log("Funcionalidad de importación Excel lista");
+            
+            // Crear interfaz de importación
+            const { importButton, fileInput } = createImportInterface();
+            
+            // Configurar eventos
+            setupEventListeners(importButton, fileInput);
+            
+        })
+        .catch(error => {
+            console.error("Error al cargar la biblioteca SheetJS:", error);
+            showMessage("Error al cargar las librerías necesarias", "error");
+        });
+    
+    // ============== API PÚBLICA PARA PERSONALIZACIÓN ==============
+    // Exponer funciones para personalizar estilos desde fuera
+    window.ExcelImporter = {
+        updateStyles: function(newStyles) {
+            Object.assign(CSS_STYLES, newStyles);
+        },
+        
+        getStyles: function() {
+            return CSS_STYLES;
+        },
+        
+        showCustomMessage: function(text, type = "success") {
+            showMessage(text, type);
+        }
     };
 });
