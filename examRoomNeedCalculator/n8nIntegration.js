@@ -61,7 +61,7 @@ class N8nIntegration {
                 .n8n-controls {
                     background: linear-gradient(135deg, #088eb0 0%, #065a73 100%);
                     padding: 15px;
-                    margin: 10px 0;
+                    margin: -10px 0;
                     border-radius: 10px;
                     box-shadow: 0 4px 15px rgba(8, 142, 176, 0.2);
                 }
