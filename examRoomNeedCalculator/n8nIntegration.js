@@ -30,12 +30,16 @@ class N8nIntegration {
 
 
         // Insert after header
-        const header = document.querySelector('header');
-        if (header && header.nextSibling) {
-            header.parentNode.insertBefore(buttonContainer, header.nextSibling);
-        } else {
-            document.body.insertBefore(buttonContainer, document.body.firstChild);
-        }
+        const header = document.getElementById('header')
+        header.appendChild(buttonContainer)
+
+
+        // const header = document.querySelector('header');
+        // if (header && header.nextSibling) {
+        //     header.parentNode.insertBefore(buttonContainer, header.nextSibling);
+        // } else {
+        //     document.body.insertBefore(buttonContainer, document.body.firstChild);
+        // }
 
         // Add styles
         this.addStyles();
@@ -61,7 +65,7 @@ class N8nIntegration {
                 .n8n-controls {
                     background: linear-gradient(135deg, #088eb0 0%, #065a73 100%);
                     padding: 15px;
-                    margin: -10px 0;
+                    margin: 0px;
                     border-radius: 10px;
                     box-shadow: 0 4px 15px rgba(8, 142, 176, 0.2);
                 }

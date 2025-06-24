@@ -13,7 +13,8 @@ function addExportButton() {
   buttonContainer.appendChild(exportButton);
 
   // Find a better insertion point - insert after the last year-selector-container
-  const yearSelectors = document.querySelectorAll('.year-selector-container');
+  const yearSelectors = document.getElementById('yearSelectors')
+  // const yearSelectors = document.querySelectorAll('.year-selector-container');
   const lastYearSelector = yearSelectors[yearSelectors.length - 1];
 
   // Insert after the year selector container parent (to avoid nesting issues)
@@ -21,7 +22,7 @@ function addExportButton() {
     lastYearSelector.parentNode.after(buttonContainer);
   } else {
     // Fallback insertion
-    document.getElementById('main-container').appendChild(buttonContainer);
+    document.getElementById('action-buttons').appendChild(buttonContainer);
   }
 
   // Add the event listener for the export
@@ -36,9 +37,6 @@ function addExportButton() {
   const style = document.createElement('style');
   style.textContent = `
       .export-button-container {
-          position: absolute;  /* Independent positioning */
-          top: 0px;          /* Distance from top */
-          left: -1800px;          /* Distance from left */
           display: flex;
           justify-content: flex-end;
           width: 100%;

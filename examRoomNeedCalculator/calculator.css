@@ -16,8 +16,9 @@ body {
   font-family: Helvetica, Arial, sans-serif;
   background-color: white;
   text-align: left;
-  padding: 20px;
+  padding: 10px 20px;
   min-height: 100vh;
+  gap: 20px;
 }
 
 /* ================================
@@ -44,7 +45,6 @@ body {
 
 /* Charts section - contains all chart containers */
 #charts-section {
-  position: relative;  /* Enable absolute positioning for children */
   display: block;      /* Change from flex to block */
   width: 100%;
   max-width: 1800px;
@@ -72,26 +72,17 @@ body {
 }
 
 /* Output containers - center and right containers */
-#output-container, 
-#output-container-2 {
-  position: absolute;  /* Independent positioning */
-  top: 420px;          /* Distance from top */
-  left: -35px;          /* Distance from left */
+.output-container {
   background: white;
   padding: 20px;
   border: 2px solid #088eb0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: relative;
   padding-top: 30px;
-  flex: 1 1 300px;  /* Grow, shrink, and base width */
-  min-width: 500px;
-  max-width: 500px;
-  min-height: 430px;
-  max-height: 430px;
-  margin-bottom: 20px;
-  overflow-y: auto;
-  overflow-x: auto;
+
+  width: calc(50% - 10px); 
+  height: 100%
+
 }
 
 /* ================================
@@ -100,94 +91,21 @@ body {
 
 /* Bar chart container */
 #chart-container {
-  flex: 1 1 500px;
-  position: absolute;  /* Independent positioning */
-  top: -400px;          /* Distance from top */
-  left: 700px;          /* Distance from left */
-  min-width: 1100px;
-  max-width: 1100px;
   height: auto;
-  min-height: 300px;
-  max-height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px auto 10px 10px;
-  opacity: 0;       /* Start hidden for animation */
-  animation: fadeIn 0.6s ease-out 0.3s forwards;
-  order: -1;        /* Move to beginning of flex order */
-  align-self: flex-start;  /* Align to top */
-  margin-left: auto;       /* Push to right side */
-}
-
-/* Pie chart container */
-#pie-chart-container {
-  position: absolute;  /* Independent positioning */
-  top: -399px;          /* Distance from top */
-  left: 300px;          /* Distance from left */
-  width: 300px;        /* Fixed width instead of flex */
-  max-width: 300px;
-  height: auto;
-  min-height: 350px;  
-  max-height: 400px;   /* Adjusted for better proportion */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;          /* Start hidden for animation */
-  animation: fadeIn 0.6s ease-out 0.6s forwards;
-}
-
-/* Donut chart container */
-#donnut-chart-container {
-  position: absolute;
-  top: 30px;
-  right: 1140px;
-  width: 380px;        /* Reducido de 420px */
-  max-width: 380px;    /* Reducido de 420px */
-  height: auto;
-  min-height: 360px;   /* Reducido de 400px */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  animation: fadeIn 0.6s ease-out 0.9s forwards;
-  border: 1px dashed #ffffff;
-  border-radius: 8px;
-  background-color: rgba(8, 142, 176, 0.03);
-  padding: 10px;       /* Reducido de 15px */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-#donnut-chart-container:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* ================================
    YEAR SELECTOR COMPONENT
 ================================ */
 
-/* Year selector main container */
-.year-selector-container {
-  position: absolute;
-  top: 205px;
-  left: 390px;
-  right: 100px;
-  z-index: 10;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 1px;
-  background: none;
-  box-shadow: none;
-  border: none;
-}
-
 /* Year selector scrollable area */
 .year-selector {
   flex: 1;
   display: flex;
   gap: 5px;
-  padding: 10px 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
   align-items: center;
@@ -198,7 +116,7 @@ body {
 }
 
 .year-selector::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none; 
 }
 
 /* Year selector buttons */
@@ -212,6 +130,7 @@ body {
   font-size: 14px;
   transition: background-color 0.3s ease, transform 0.2s ease;
   color: #555;
+  margin: 0px 5px;
 }
 
 .year-button:hover {
@@ -225,37 +144,12 @@ body {
   transform: scale(1.1);
 }
 
-/* Year selector navigation arrows */
-.arrow {
-  display: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.1);
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 50%;
-  transition: background 0.3s ease;
-  z-index: 1;
-}
-
-.arrow:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.arrow.left {
-  left: 5px;
-}
-
-.arrow.right {
-  right: 5px;
-}
-
 /* Year selector checkbox labels */
-.year-selector-container label {
+.all-year-selector
+{
+  height: fit-content;
   display: flex;
+  justify-content: center;
   align-items: center;
   margin: 0;
   font-size: 14px;
@@ -266,15 +160,17 @@ body {
   background-color: #f5f5f5;
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-left: 10px;
 }
-
-.year-selector-container label:hover {
+.all-year-selector :hover
+{
   background-color: #e8e8e8;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 /* Year selector checkboxes */
-.year-selector-container input[type="checkbox"] {
+.all-year-selector-input
+{
   width: auto;
   margin-right: 8px;
   appearance: none;
@@ -289,32 +185,37 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.year-selector-container input[type="checkbox"]:checked {
+.all-year-selector-input:checked
+{
   background-color: #088eb0;
 }
 
-.year-selector-container input[type="checkbox"]:checked::after {
+.all-year-selector-input:checked::after
+{
   content: '';
   position: absolute;
-  left: 4px;
-  top: 1px;
+  left: 3px;
+  top: -1px;
   width: 5px;
   height: 9px;
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
-
-.year-selector-container input[type="checkbox"]:checked + span {
+.all-year-selector-input :checked + span
+{
   font-weight: bold;
   color: #088eb0;
 }
 
-.year-selector-container input[type="checkbox"]:checked {
+.all-year-selector-input :checked
+{
   animation: checkboxPulse 0.3s ease;
 }
 
-.year-selector-container label span {
+.all-year-selector
+/* .year-selector-container label span  */
+{
   transition: color 0.3s ease;
 }
 
@@ -341,8 +242,7 @@ h2 {
 }
 
 /* Output container headings */
-#output-container h3,
-#output-container-2 h3 {
+.output-container h3{
   font-size: 1rem;
   color: rgb(83, 82, 82);
   text-align: center;
@@ -360,16 +260,14 @@ h2 {
 }
 
 /* Output container paragraphs */
-#output-container p,
-#output-container-2 p {
+.output-container p{
   font-size: 0.9rem;
   color: rgb(83, 82, 82);
   text-align: center;
   margin: 10px 0 5px 0;
 }
 
-#output-container p:first-of-type,
-#output-container-2 p:first-of-type {
+.output-container p:first-of-type{
   margin-top: -10px;
 }
 
@@ -423,25 +321,21 @@ input {
 ================================ */
 
 /* Custom scrollbars for output containers */
-#output-container::-webkit-scrollbar,
-#output-container-2::-webkit-scrollbar {
+.output-container::-webkit-scrollbar{
   width: 3px; 
   height: 3px;
 }
 
-#output-container::-webkit-scrollbar-track,
-#output-container-2::-webkit-scrollbar-track {
+.output-container::-webkit-scrollbar-track{
   background: #f0f0f0; 
 }
 
-#output-container::-webkit-scrollbar-thumb,
-#output-container-2::-webkit-scrollbar-thumb {
+.output-container::-webkit-scrollbar-thumb {
   background-color: #088eb0; 
   border-radius: 3px;
 }
 
-#output-container::-webkit-scrollbar-thumb:hover,
-#output-container-2::-webkit-scrollbar-thumb:hover {
+.output-container::-webkit-scrollbar-thumb:hover{
   background-color: #066f8c; 
 }
 
@@ -538,45 +432,71 @@ td.animated-cell.highlight {
   100% { transform: scale(1); }
 }
 
-/* ================================
-   RESPONSIVE MEDIA QUERIES
-================================ */
-
-/* Large screens adjustments */
-@media (max-width: 1600px) {
-  #charts-section {
-    gap: 40px;
-  }
-  
-  #chart-container {
-    min-width: 450px;
-  }
+.container-all-graphics{
+  display: flex; 
+  flex-direction: row; 
+  width: 100%;
+  flex: 1;
+}
+.container-graphics{
+  width: 50%; display: flex; flex-direction: column;
+}
+.container-table-graphics{
+  flex: 1; 
+  display: flex; 
+  flex-direction: row;
+}
+.table-throughput-assumptions{
+  display: flex; 
+  flex-direction: column;
+  align-items: center;   
+}
+.container-pie-and-donnut-chart{
+  flex: 1; 
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.action-buttons{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+}
+.container-chart-actions{
+  display: flex; 
+  flex-direction: column; 
+}
+.buttons-years{
+  display: flex; 
+  flex-direction: row; 
+  width: 100%;
+}
+.container-tables{
+  height: 50%; 
+  display: flex; 
+  flex-direction: row;
+  gap: 20px;
 }
 
-/* Medium screens adjustments */
-@media (max-width: 1200px) {
-  #top-section {
-    justify-content: center;
-  }
-  
-  .input-container, #output-container, #output-container-2 {
-    flex-basis: 100%;
-    max-width: 600px;
-  }
-  
-  #charts-section {
-    gap: 30px;
-  }
-}
+.container-pie-char{
+  width: 95%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-/* Small screens adjustments */
-@media (max-width: 767px) {
-  .year-button {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  
-  #chart-container, #pie-chart-container, #donnut-chart-container {
-    min-width: 100%;
-  }
+}
+.container-left-contents{
+  flex: 1; 
+  display: flex; 
+  flex-direction: column;
+  align-items: flex-start; 
+
+}
+.container-donnut-char{
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

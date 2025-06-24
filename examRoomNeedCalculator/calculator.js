@@ -75,14 +75,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // arrow buttons for scrolling year selector
-    const leftArrow = document.querySelector(".arrow.left");
-    const rightArrow = document.querySelector(".arrow.right");
-    leftArrow.addEventListener("click", function () {
-        yearSelector.scrollBy({ left: -100, behavior: "smooth" });
-    });
-    rightArrow.addEventListener("click", function () {
-        yearSelector.scrollBy({ left: 100, behavior: "smooth" });
-    });
+    // const leftArrow = document.querySelector(".arrow.left");
+    // const rightArrow = document.querySelector(".arrow.right");
+    // leftArrow.addEventListener("click", function () {
+    //     yearSelector.scrollBy({ left: -100, behavior: "smooth" });
+    // });
+    // rightArrow.addEventListener("click", function () {
+    //     yearSelector.scrollBy({ left: 100, behavior: "smooth" });
+    // });
 
     // Add output row for a given year in chronological order
     // Modificar la función addOutputRow para incluir animación
