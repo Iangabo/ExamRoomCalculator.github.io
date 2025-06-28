@@ -94,9 +94,7 @@
                     </div>
                     <div class="action-buttons" id="action-buttons"  >
 
-                        <div style="width: 100px; height: 50px; background-color: red;" >
-
-                        </div>
+                        <!-- esto es para los botones -->
 
                     </div>
                 </div>
@@ -112,11 +110,17 @@
 
 
             </div>
-            <div class="instruction" >
-                <!-- Agragar las instruycciones aqui ;)  -->
-
-            </div>
-
+            <div class="instructions-container">
+                        <h3>Instructions</h3>
+                        <div class="instructions-content">
+                            <p>This calculator does:</p>
+                            <p><strong>Step 1:</strong> enter the throughput assumptions</p>
+                            <p><strong>Step 2:</strong> Enter the Clinic Visit Room Time values</p>
+                            <p><strong>Step 3:</strong> Set the Room Utilization Target</p>
+                            
+                            <p>As an alternative, you may enter the values from an excel spreadsheet. Calculation results can be exported to Excel.</p>
+                        </div>
+                    </div>           
         </div>
         <div class="container-graphics" >
             <div class="container-chart-actions" >
@@ -137,6 +141,7 @@
 
                 </div>
             </div>
+
             <div class="container-tables" >
                 <!-- OUTPUT CONTAINER -->
                 <div class="output-container"  >
@@ -218,7 +223,7 @@
     <script src="chart.js"></script>
     <script src="donnutChart.js"></script>
     <script src="export.js"></script>
-    <!-- <script src="excelDataImporter.js"></script> -->
+    <script src="excelDataImporter.js"></script>
     <script src="n8nIntegration.js"></script>
 </body>
 

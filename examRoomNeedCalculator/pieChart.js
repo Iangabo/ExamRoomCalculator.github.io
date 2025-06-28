@@ -54,7 +54,11 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           title: {
             display: true,
-            text: " Clinic Visit Room Time"
+            text: " Clinic Visit Room Time",
+            font: {
+                        size: 17,        
+                        weight: 'bold'   
+                    },
           },
           tooltip: {
             callbacks: {

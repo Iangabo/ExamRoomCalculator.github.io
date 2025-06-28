@@ -19,6 +19,14 @@ document.addEventListener("DOMContentLoaded", function () {
             circumference: 270, 
             cutout: '50%',
             plugins: {
+                title: {
+                    display: true,
+                    text: "Room Utilization",
+                    font: {
+                        size: 17,        
+                        weight: 'bold'   
+                    },
+                },
                 legend: { display: false },
                 tooltip: { enabled: false }
             },
@@ -38,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.textBaseline = 'top';
 
                 const textX = width * 0.4;
-                const textY = height * 0.58;
+                const textY = height * 0.65;
 
                 chart.customCenterText = {
                     x: textX,
@@ -54,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.fillStyle = "#666";
                 ctx.fillText("TARGET", textX, textY + fontSize + 5);
                 ctx.font = `${fontSize * 0.5}px Arial`;
-                ctx.fillText("Room Utilization", textX , textY + fontSize * 1.6 + 10);
                 ctx.restore();
             }
         }]

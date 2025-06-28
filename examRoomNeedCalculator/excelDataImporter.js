@@ -1,7 +1,4 @@
-// excelDataImporter.js - Versión mejorada con CSS personalizable
 document.addEventListener("DOMContentLoaded", function() {
-    
-    // ============== CONFIGURACIÓN DE ESTILOS CSS ==============
     const CSS_STYLES = {
         importButton: {
             backgroundColor: "#4CAF50",
