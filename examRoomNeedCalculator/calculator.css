@@ -81,7 +81,10 @@ body {
   padding-top: 30px;
 
   width: calc(50% - 10px); 
-  height: 100%
+  height: 100%;
+
+  overflow: auto;
+  overflow-x: clip;
 
 }
 
@@ -95,6 +98,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  max-height: 300px ;
 }
 
 /* ================================
@@ -436,7 +440,7 @@ td.animated-cell.highlight {
   display: flex; 
   flex-direction: row; 
   width: 100%;
-  flex: 1;
+  height: calc(100% - 100px );
 }
 .container-graphics{
   width: 50%; display: flex; flex-direction: column;
@@ -466,7 +470,7 @@ td.animated-cell.highlight {
 }
 .container-chart-actions{
   display: flex; 
-  flex-direction: column; 
+  flex-direction: column;
 }
 .buttons-years{
   display: flex; 
@@ -474,7 +478,7 @@ td.animated-cell.highlight {
   width: 100%;
 }
 .container-tables{
-  height: 50%; 
+  height: calc(100% - 350px); 
   display: flex; 
   flex-direction: row;
   gap: 20px;
@@ -482,6 +486,7 @@ td.animated-cell.highlight {
 
 .container-pie-char{
   width: 95%;
+  max-height: calc(50% - 20px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -496,6 +501,7 @@ td.animated-cell.highlight {
 }
 .container-donnut-char{
   width: 90%;
+  max-height: calc(50% - 20px);
   display: flex;
   align-items: center;
   justify-content: center;
