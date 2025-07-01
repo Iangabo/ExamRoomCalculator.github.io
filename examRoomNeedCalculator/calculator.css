@@ -308,6 +308,40 @@ th {
 }
 
 /* ================================
+   TABLE STYLES FOR OUTPUT CONTAINERS
+================================ */
+
+/* Tables inside output containers with subtle borders */
+.output-container table {
+  border: none;
+  border-collapse: collapse;
+}
+
+.output-container th,
+.output-container td {
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+  padding: 8px 10px;
+}
+
+.output-container th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  border-top: 1px solid #088eb0;
+  border-bottom: 1px solid #088eb0;
+}
+
+.output-container tbody tr:first-child td {
+  border-top: none;
+}
+
+.output-container tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ================================
    FORM INPUT STYLES
 ================================ */
 
@@ -444,12 +478,12 @@ td.animated-cell.highlight {
 }
 .container-graphics{
   width: 50%; display: flex; flex-direction: column;
+  gap: 15px;
 }
 .container-table-graphics{
   display: flex; 
   flex-direction: row;
   height: calc(100% - 226px);
-
 }
 .table-throughput-assumptions{
   display: flex; 
@@ -511,7 +545,7 @@ td.animated-cell.highlight {
   justify-content: center;
 }
 .instructions-container {
-    width: 98%;
+    width: 95%;
     background-color: #e7f3ff;
     border: 1px solid #4a90e2;
     padding: 18px;
