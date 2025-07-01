@@ -3,15 +3,17 @@ document.addEventListener("DOMContentLoaded", function() {
         importButton: {
             backgroundColor: "#4CAF50",
             color: "white",
-            padding: "10px 15px",
+            padding: "12px 22px",
             border: "none",
-            borderRadius: "4px",
+            borderRadius: "5px",
             cursor: "pointer",
-            fontSize: "14px",
+            fontSize: "16px",
             fontWeight: "bold",
             boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
             transition: "all 0.3s ease",
-            margin: "10px 5px" // Added margin for separation
+            margin: "10px 0",
+            justifyContent: "flex-end",
+            width: "fit-content",
         },
         importButtonHover: {
             backgroundColor: "#45a049",
