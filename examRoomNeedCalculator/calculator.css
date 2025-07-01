@@ -98,7 +98,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-height: 300px ;
+  max-height: 400px ;
 }
 
 /* ================================
@@ -482,7 +482,7 @@ td.animated-cell.highlight {
   width: 100%;
 }
 .container-tables{
-  height: calc(100% - 350px); 
+  height: calc(100% - 450px); 
   display: flex; 
   flex-direction: row;
   gap: 20px;

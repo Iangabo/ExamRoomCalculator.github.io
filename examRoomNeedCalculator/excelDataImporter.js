@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function() {
             border: "none",
             borderRadius: "4px",
             cursor: "pointer",
-            marginTop: "-1000px",
             fontSize: "14px",
             fontWeight: "bold",
             boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-            transition: "all 0.3s ease"
+            transition: "all 0.3s ease",
+            margin: "10px 5px" // Added margin for separation
         },
         importButtonHover: {
             backgroundColor: "#45a049",
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 
-    // ============== FUNCIONES DE UTILIDAD PARA CSS ==============
+    // ============== CSS UTILITY FUNCTIONS ==============
     function applyStyles(element, styles) {
         Object.assign(element.style, styles);
     }
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return element;
     }
 
-    // ============== VARIABLES GLOBALES ==============
+    // ============== GLOBAL VARIABLES ==============
     window.roomUtilizationTarget = window.roomUtilizationTarget || 75; 
     
     // Create getPrecalculatedData function if it does not exist
@@ -78,11 +78,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
     
-    // ============== CREACIÓN DE LA INTERFAZ ==============
+    // ============== INTERFACE CREATION ==============
     function createImportInterface() {
-        const controlsContainer = document.querySelector(".controls-container") || document.body;
+        // Look specifically for the action-buttons div
+        const actionButtonsContainer = document.getElementById("action-buttons");
         
-        // Crear botón de importación con estilos personalizables
+        if (!actionButtonsContainer) {
+            console.error("action-buttons container not found");
+            return;
+        }
+        
+        // Create import button with customizable styles
         const importButton = createStyledElement(
             "button",
             CSS_STYLES.importButton,
@@ -91,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
         importButton.id = "importExcelBtn";
         importButton.className = "import-btn";
         
-        // Agregar efectos hover
+        // Add hover effects
         importButton.addEventListener("mouseenter", function() {
             applyStyles(this, CSS_STYLES.importButtonHover);
         });
@@ -100,28 +106,30 @@ document.addEventListener("DOMContentLoaded", function() {
             applyStyles(this, CSS_STYLES.importButton);
         });
         
-        controlsContainer.appendChild(importButton);
+        // Add button directly to action-buttons container
+        actionButtonsContainer.appendChild(importButton);
         
-        // Crear input de archivo (oculto)
+        // Create file input (hidden)
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.id = "excelFileInput";
         fileInput.accept = ".xlsx, .xls";
         fileInput.style.display = "none";
         
-        controlsContainer.appendChild(fileInput);
+        // Add file input to the same container
+        actionButtonsContainer.appendChild(fileInput);
         
         return { importButton, fileInput };
     }
     
-    // ============== MANEJO DE EVENTOS ==============
+    // ============== EVENT HANDLING ==============
     function setupEventListeners(importButton, fileInput) {
-        // Clic en botón de importación
+        // Import button click
         importButton.addEventListener("click", function() {
             fileInput.click();
         });
         
-        // Cambio en input de archivo
+        // File input change
         fileInput.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -134,13 +142,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 processExcelFile(data);
             };
             reader.onerror = function() {
-                showMessage("Error al leer el archivo", "error");
+                showMessage("Error reading file", "error");
             };
             reader.readAsArrayBuffer(file);
         });
     }
     
-    // ============== MENSAJES DE ESTADO ==============
+    // ============== STATUS MESSAGES ==============
     function showMessage(text, type = "success") {
         const messageStyles = type === "success" ? CSS_STYLES.successMessage : CSS_STYLES.errorMessage;
         
@@ -149,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         document.body.appendChild(message);
         
-        // Animación de entrada
+        // Entry animation
         message.style.opacity = "0";
         message.style.transform = "translateX(100%)";
         
@@ -159,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
             message.style.transform = "translateX(0)";
         }, 10);
         
-        // Remover después de 3 segundos
+        // Remove after 3 seconds
         setTimeout(() => {
             message.style.opacity = "0";
             message.style.transform = "translateX(100%)";
@@ -174,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 ...CSS_STYLES.successMessage,
                 backgroundColor: "#2196F3"
             },
-            "Procesando archivo Excel..."
+            "Processing Excel file..."
         );
         loading.id = "loadingMessage";
         document.body.appendChild(loading);
@@ -185,12 +193,12 @@ document.addEventListener("DOMContentLoaded", function() {
         if (loading) loading.remove();
     }
     
-    // ============== PROCESAMIENTO DE EXCEL ==============
+    // ============== EXCEL PROCESSING ==============
     function processExcelFile(data) {
         try {
             const workbook = XLSX.read(data, { type: 'array' });
             
-            // Buscar hoja de parámetros
+            // Look for parameters sheet
             let parametersSheet;
             if (workbook.SheetNames.includes("Parameters")) {
                 parametersSheet = "Parameters";
@@ -203,26 +211,26 @@ document.addEventListener("DOMContentLoaded", function() {
             
             if (jsonData.length === 0) {
                 hideLoadingMessage();
-                showMessage("No se encontraron datos en el archivo Excel", "error");
+                showMessage("No data found in Excel file", "error");
                 return;
             }
             
-            console.log("Datos extraídos:", jsonData);
+            console.log("Extracted data:", jsonData);
             
-            // Extraer datos y actualizar UI
+            // Extract data and update UI
             extractParametersAndUpdateUI(jsonData, workbook);
             
             hideLoadingMessage();
-            showMessage("¡Datos Excel importados correctamente!");
+            showMessage("Excel data imported successfully!");
             
         } catch (error) {
-            console.error("Error procesando archivo Excel:", error);
+            console.error("Error processing Excel file:", error);
             hideLoadingMessage();
-            showMessage("Error procesando archivo Excel. Verifique el formato e intente nuevamente.", "error");
+            showMessage("Error processing Excel file. Please check format and try again.", "error");
         }
     }
     
-    // ============== EXTRACCIÓN Y ACTUALIZACIÓN DE DATOS ==============
+    // ============== DATA EXTRACTION AND UI UPDATE ==============
     function extractParametersAndUpdateUI(jsonData, workbook) {
         const mappings = {
             "Annual Growth Target (%)": "annual-growth-target",
@@ -237,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function() {
             "Room Utilization Target (%)": "room-utilization-target"
         };
         
-        // Procesar parámetros
+        // Process parameters
         for (const row of jsonData) {
             if (row.Parameter && row.Value !== undefined) {
                 const paramName = row.Parameter;
@@ -257,21 +265,21 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
                 
-                // Manejar datos de tiempo de visita
+                // Handle visit time data
                 if (paramName === "MA Visit Time" || paramName === "Wait Time" || paramName === "Provider Visit Time") {
                     handleVisitTimeData(paramName, paramValue);
                 }
             }
         }
         
-        // Procesar hojas de resultados
+        // Process result sheets
         processResultSheets(workbook);
         
-        // Actualizar cálculos y gráficos
+        // Update calculations and charts
         updateCalculationsAndCharts();
     }
     
-    // ============== PROCESAMIENTO DE HOJAS DE RESULTADOS ==============
+    // ============== RESULT SHEETS PROCESSING ==============
     function processResultSheets(workbook) {
         try {
             if (workbook.SheetNames.includes("Results")) {
@@ -290,11 +298,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         } catch (error) {
-            console.error("Error procesando hojas de resultados:", error);
+            console.error("Error processing result sheets:", error);
         }
     }
     
-    // ============== FUNCIONES DE DATOS ==============
+    // ============== DATA FUNCTIONS ==============
     function handleVisitTimeData(paramName, paramValue) {
         if (!window.breakdownValues) {
             window.breakdownValues = [12.5, 13, 19.5];
@@ -379,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function() {
             hasRemoveOutputRowProviderProductivityPeak: typeof window.removeOutputRowProviderProductivityPeak === 'function'
         };
         
-        // Limpiar años previamente seleccionados
+        // Clear previously selected years
         document.querySelectorAll(".year-button.active").forEach(btn => {
             btn.classList.remove("active");
             const year = parseInt(btn.dataset.year, 10);
@@ -390,7 +398,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (functions.hasRemoveOutputRowProviderProductivityPeak) window.removeOutputRowProviderProductivityPeak(year);
         });
         
-        // Seleccionar años de los datos
+        // Select years from data
         yearData.forEach(data => {
             const yearBtn = document.querySelector(`.year-button[data-year="${data.year}"]`);
             if (yearBtn) {
@@ -418,7 +426,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    // ============== CARGA DE LIBRERÍAS ==============
+    // ============== LIBRARY LOADING ==============
     function loadSheetJS() {
         if (typeof XLSX !== 'undefined') return Promise.resolve();
         
@@ -431,10 +439,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // ============== FUNCIONES AUXILIARES ==============
-    // Implementaciones por defecto de las funciones de tabla
+    // ============== AUXILIARY FUNCTIONS ==============
+    // Default implementations of table functions
     window.addOutputRow = window.addOutputRow || function(year) {
-        console.log(`Función addOutputRow no definida, intentando añadir fila para ${year}`);
+        console.log(`addOutputRow function not defined, trying to add row for ${year}`);
         const tbody = document.getElementById("outputTbody");
         if (tbody) {
             const tr = document.createElement("tr");
@@ -494,7 +502,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
     
-    // Funciones de eliminación (simplificadas)
+    // Removal functions (simplified)
     window.removeOutputRow = window.removeOutputRow || function(year) {
         const rows = document.querySelectorAll('#outputTbody tr');
         rows.forEach(row => {
@@ -531,26 +539,29 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     };
     
-    // ============== INICIALIZACIÓN ==============
-    // Cargar librerías y configurar interfaz
+    // ============== INITIALIZATION ==============
+    // Load libraries and setup interface
     loadSheetJS()
         .then(() => {
-            console.log("Funcionalidad de importación Excel lista");
+            console.log("Excel import functionality ready");
             
-            // Crear interfaz de importación
-            const { importButton, fileInput } = createImportInterface();
+            // Create import interface
+            const interfaceElements = createImportInterface();
             
-            // Configurar eventos
-            setupEventListeners(importButton, fileInput);
+            if (interfaceElements) {
+                const { importButton, fileInput } = interfaceElements;
+                // Setup events
+                setupEventListeners(importButton, fileInput);
+            }
             
         })
         .catch(error => {
-            console.error("Error al cargar la biblioteca SheetJS:", error);
-            showMessage("Error al cargar las librerías necesarias", "error");
+            console.error("Error loading SheetJS library:", error);
+            showMessage("Error loading required libraries", "error");
         });
     
-    // ============== API PÚBLICA PARA PERSONALIZACIÓN ==============
-    // Exponer funciones para personalizar estilos desde fuera
+    // ============== PUBLIC API FOR CUSTOMIZATION ==============
+    // Expose functions to customize styles from outside
     window.ExcelImporter = {
         updateStyles: function(newStyles) {
             Object.assign(CSS_STYLES, newStyles);
